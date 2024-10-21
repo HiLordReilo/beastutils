@@ -4,6 +4,7 @@
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:BST_SheetsEditor"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
 		mc:Ignorable="d"
 		Title="BeatStream Info Sheets Editor" Width="1280" Height="720">
     
@@ -73,7 +74,7 @@
                                     </Grid.ColumnDefinitions>
 
                                     <Label Content="ID: " HorizontalAlignment="Right" Grid.Column="0"/>
-                                    <TextBox Text="{Binding Path=SelectedItem.ID, ElementName=lvMusicList}" Margin="2" Grid.Column="1"/>
+                                    <xctk:IntegerUpDown Value="{Binding Path=SelectedItem.ID, ElementName=lvMusicList}" Margin="2" Grid.Column="1"/>
                                 </Grid>
 
                                 <Separator Margin="10"/>
@@ -133,8 +134,8 @@
                                     </Grid.ColumnDefinitions>
 
                                     <Label Content="BPM: " HorizontalAlignment="Right" Grid.Column="0"/>
-                                    <TextBox Text="{Binding Path=SelectedItem.MinimumBPM, ElementName=lvMusicList}" Margin="2" Grid.Column="1"/>
-                                    <TextBox Text="{Binding Path=SelectedItem.MaximumBPM, ElementName=lvMusicList}" Margin="2" Grid.Column="2"/>
+                                    <xctk:DecimalUpDown Value="{Binding Path=SelectedItem.MinimumBPM, ElementName=lvMusicList}" Margin="2" Grid.Column="1"/>
+                                    <xctk:DecimalUpDown Value="{Binding Path=SelectedItem.MaximumBPM, ElementName=lvMusicList}" Margin="2" Grid.Column="2"/>
                                 </Grid>
 
                                 <!--Difficulties-->
@@ -408,15 +409,15 @@
                                     <Label Content="&#8317;&#8305;&#8318; Unknown 4: " HorizontalAlignment="Right" Grid.Column="0" ToolTip="Sometimes has some extra data similar to artists fields,&#10;but most of the time it is just a dash."/>
                                     <TextBox Text="{Binding Path=SelectedItem.Unknown4, ElementName=lvMusicList}" Margin="2" Grid.Column="1"/>
                                 </Grid>
-                                <!--Unknown5-->
+                                <!--Update-->
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="1*"/>
                                         <ColumnDefinition Width="2*"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <Label Content="&#8317;&#8305;&#8318; Unknown 5: " HorizontalAlignment="Right" Grid.Column="0" ToolTip="Probably related to events."/>
-                                    <TextBox Text="{Binding Path=SelectedItem.Unknown5, ElementName=lvMusicList}" Margin="2" Grid.Column="1"/>
+                                    <Label Content="&#8317;&#8305;&#8318; Update ID: " HorizontalAlignment="Right" Grid.Column="0" ToolTip="ID of an update this song was added.&#10;Final BST1 update - 48.&#10;Final BST2 update - 18"/>
+                                    <xctk:IntegerUpDown Value="{Binding Path=SelectedItem.Update, ElementName=lvMusicList}" Margin="2" Grid.Column="1"/>
                                 </Grid>
                                 <!--Unknown6-->
                                 <Grid>
@@ -426,7 +427,7 @@
                                     </Grid.ColumnDefinitions>
 
                                     <Label Content="&#8317;&#8305;&#8318; Unknown 6: " HorizontalAlignment="Right" Grid.Column="0" ToolTip="Probably related specifically to BEAST CRISIS,&#10;as other songs have it set to 0."/>
-                                    <TextBox Text="{Binding Path=SelectedItem.Unknown1, ElementName=lvMusicList}" Margin="2" Grid.Column="1"/>
+                                    <xctk:IntegerUpDown Value="{Binding Path=SelectedItem.Unknown1, ElementName=lvMusicList}" Margin="2" Grid.Column="1"/>
                                 </Grid>
                                 <!--Unknown7-->
                                 <Grid>
@@ -437,6 +438,16 @@
 
                                     <Label Content="Unknown 7: " HorizontalAlignment="Right" Grid.Column="0"/>
                                     <TextBox Text="{Binding Path=SelectedItem.Unknown7, ElementName=lvMusicList}" Margin="2" Grid.Column="1"/>
+                                </Grid>
+                                <!--Event Handler-->
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="2*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label Content="&#8317;&#8305;&#8318; Event Handler: " HorizontalAlignment="Right" Grid.Column="0" ToolTip="Internal name of the event this song belongs to.&#10;If it doesn't belong to any, just leave a dash here."/>
+                                    <TextBox Text="{Binding Path=SelectedItem.EventHandler, ElementName=lvMusicList}" Margin="2" Grid.Column="1"/>
                                 </Grid>
                                 <!--Series-->
                                 <Grid>
@@ -522,32 +533,16 @@
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition/>
-                        <RowDefinition/>
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
 
-                    <ListView x:Name="lvHackerList" Margin="3" Grid.Row="1">
+                    <ListView x:Name="lvHackerList" Margin="3" Grid.Row="0">
                         <ListView.View>
                             <GridView AllowsColumnReorder="False">
                                 <GridViewColumn DisplayMemberBinding="{Binding Path=ID}" Width="32">ID</GridViewColumn>
                                 <GridViewColumn DisplayMemberBinding="{Binding Path=DisplayedUnlockedSong}" Width="350">Unlocked NIGHTMARE</GridViewColumn>
                                 <GridViewColumn DisplayMemberBinding="{Binding Path=DisplayedUnlockedDifficulty}" Width="64">Difficulty</GridViewColumn>
-                                <GridViewColumn DisplayMemberBinding="{Binding Path=DisplayedHackerLevel}" Width="175">HACKER LEVEL</GridViewColumn>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-
-                    <ListView x:Name="lvHackerMusicList" Margin="3" Grid.Row="0" MouseDoubleClick="AssignSong">
-                        <ListView.View>
-                            <GridView AllowsColumnReorder="False">
-                                <GridViewColumn DisplayMemberBinding="{Binding Path=ID}" Width="32">ID</GridViewColumn>
-                                <GridViewColumn DisplayMemberBinding="{Binding Path=Title}" Width="auto">Title</GridViewColumn>
-                                <GridViewColumn DisplayMemberBinding="{Binding Path=SongArtist}" Width="auto">Artist</GridViewColumn>
-                                <GridViewColumn DisplayMemberBinding="{Binding Path=DisplayedBPM}" Width="72">BPM</GridViewColumn>
-                                <GridViewColumn DisplayMemberBinding="{Binding Path=DisplayedDifficultyLight}" Width="64">LIGHT</GridViewColumn>
-                                <GridViewColumn DisplayMemberBinding="{Binding Path=DisplayedDifficultyMedium}" Width="64">MEDIUM</GridViewColumn>
-                                <GridViewColumn DisplayMemberBinding="{Binding Path=DisplayedDifficultyBeast}" Width="64">BEAST</GridViewColumn>
-                                <GridViewColumn DisplayMemberBinding="{Binding Path=DisplayedDifficultyNightmare}" Width="72">NIGHTMARE</GridViewColumn>
+                                <GridViewColumn DisplayMemberBinding="{Binding Path=DisplayedHackerLevel}" Width="180">HACKER LEVEL</GridViewColumn>
                             </GridView>
                         </ListView.View>
                     </ListView>
@@ -560,146 +555,206 @@
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <Button Content="Add" Margin="2" Click="bAddEntry_MusicList_Click" Grid.Column="0"/>
-                        <Button Content="Remove" Margin="2" Click="bRemoveEntry_MusicList_Click" Grid.Column="1"/>
+                        <Button Content="Add" Margin="2" Click="bAddEntry_HackerList_Click" Grid.Column="0"/>
+                        <Button Content="Remove" Margin="2" Click="bRemoveEntry_HackerList_Click" Grid.Column="1"/>
                         <Button Content="Refresh and Reindex" Margin="2" Click="bReindexAndRefresh_HackerList_Click" Grid.Column="2"/>
-                        <Button Content="Clear list" Margin="2" Click="bClear_MusicList_Click" Grid.Column="3"/>
+                        <Button Content="Clear list" Margin="2" Click="bClear_HackerList_Click" Grid.Column="3"/>
                     </Grid>
 
                     <!--Metadata panel-->
                     <TabControl Grid.Column="1" Grid.Row="0" Grid.RowSpan="3">
                         <TabItem Header="Properties">
-                            <StackPanel>
-                                <!--Chain ID-->
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="2*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <Label Content="Chain ID: " HorizontalAlignment="Right" Grid.Column="0"/>
-                                    <TextBox Text="{Binding Path=SelectedItem.ID, ElementName=lvHackerList}" Margin="2" Grid.Column="1"/>
-                                </Grid>
-                                <!--Unlocked ID-->
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="3*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="5*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <Label Content="Unlocked NIGHTMARE song: " HorizontalAlignment="Right" Grid.Column="0"/>
-                                    <TextBox Text="{Binding Path=SelectedItem.UnlockedSong, ElementName=lvHackerList}" Grid.Column="1" Margin="2"/>
-                                    <Button Name="btHackerUnlockedSong" Click="btHackerUnlockedSong_Click" Content="Assign song" Grid.Column="2" Margin="2"/>
-                                </Grid>
-
-                                <Separator Margin="10"/>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
                                 
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition/>
-                                        <RowDefinition/>
-                                        <RowDefinition/>
-                                        <RowDefinition/>
-                                        <RowDefinition/>
-                                        <RowDefinition/>
-                                        <RowDefinition/>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="2*"/>
-                                        <ColumnDefinition Width="2*"/>
-                                        <ColumnDefinition Width="2*"/>
-                                        <ColumnDefinition Width="2*"/>
-                                    </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Row="0">
+                                    <!--Chain ID-->
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="1*"/>
+                                            <ColumnDefinition Width="2*"/>
+                                        </Grid.ColumnDefinitions>
 
-                                    <Label Content="[Lock Chain]" HorizontalAlignment="Center" Grid.Column="0" Grid.ColumnSpan="6" FontWeight="Bold"/>
-                                    
-                                    <Label Content="ID" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="1" FontWeight="Bold"/>
-                                    <Label Content="Song ID" HorizontalAlignment="Center" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" FontWeight="Bold"/>
-                                    <Label Content="Song Difficulty" HorizontalAlignment="Center" Grid.Column="3" Grid.Row="1" FontWeight="Bold"/>
-                                    <Label Content="Lock type" HorizontalAlignment="Center" Grid.Column="4" Grid.Row="1" FontWeight="Bold"/>
-                                    <Label Content="Target (% of max)" HorizontalAlignment="Center" Grid.Column="5" Grid.Row="1" FontWeight="Bold"/>
-                                    
-                                    <Label Content="Lock 1: " HorizontalAlignment="Right" Grid.Column="0" Grid.Row="2"/>
-                                    <TextBox Text="{Binding Path=SelectedItem.Lock1_SongID, ElementName=lvHackerList}" Grid.Column="1" Margin="2" Grid.Row="2"/>
-                                    <Button Name="btHackerLock1" Click="btHackerUnlockedSong_Click" Content="Assign song" Grid.Column="2" Margin="2" Grid.Row="2"/>
-                                    <ComboBox SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock1Difficulty, ElementName=lvHackerList}" Grid.Column="3" Margin="2" Grid.Row="2">
-                                        <ComboBoxItem Content="LIGHT"/>
-                                        <ComboBoxItem Content="MEDIUM"/>
-                                        <ComboBoxItem Content="BEAST"/>
-                                        <ComboBoxItem Content="NIGHTMARE"/>
-                                    </ComboBox>
-                                    <ComboBox SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock1Method, ElementName=lvHackerList}" Grid.Column="4" Margin="2" Grid.Row="2">
-                                        <ComboBoxItem Content="Score"/>
-                                        <ComboBoxItem Content="Full Combo"/>
-                                    </ComboBox>
-                                    <TextBox Text="{Binding Path=SelectedItem.Lock1_Goal, ElementName=lvHackerList}" Grid.Column="5" Margin="2" Grid.Row="2"/>
-                                    
-                                    <Label Content="Lock 2: " HorizontalAlignment="Right" Grid.Column="0" Grid.Row="3"/>
-                                    <TextBox Text="{Binding Path=SelectedItem.Lock2_SongID, ElementName=lvHackerList}" Grid.Column="1" Margin="2" Grid.Row="3"/>
-                                    <Button Name="btHackerLock2" Click="btHackerUnlockedSong_Click" Content="Assign song" Grid.Column="2" Margin="2" Grid.Row="3"/>
-                                    <ComboBox SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock2Difficulty, ElementName=lvHackerList}" Grid.Column="3" Margin="2" Grid.Row="3">
-                                        <ComboBoxItem Content="LIGHT"/>
-                                        <ComboBoxItem Content="MEDIUM"/>
-                                        <ComboBoxItem Content="BEAST"/>
-                                        <ComboBoxItem Content="NIGHTMARE"/>
-                                    </ComboBox>
-                                    <ComboBox SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock2Method, ElementName=lvHackerList}" Grid.Column="4" Margin="2" Grid.Row="3">
-                                        <ComboBoxItem Content="Score"/>
-                                        <ComboBoxItem Content="Full Combo"/>
-                                    </ComboBox>
-                                    <TextBox Text="{Binding Path=SelectedItem.Lock1_Goal, ElementName=lvHackerList}" Grid.Column="5" Margin="2" Grid.Row="3"/>
-                                    
-                                    <Label Content="Lock 3: " HorizontalAlignment="Right" Grid.Column="0" Grid.Row="4"/>
-                                    <TextBox Text="{Binding Path=SelectedItem.Lock3_SongID, ElementName=lvHackerList}" Grid.Column="1" Margin="2" Grid.Row="4"/>
-                                    <Button Name="btHackerLock3" Click="btHackerUnlockedSong_Click" Content="Assign song" Grid.Column="2" Margin="2" Grid.Row="4"/>
-                                    <ComboBox SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock3Difficulty, ElementName=lvHackerList}" Grid.Column="3" Margin="2" Grid.Row="4">
-                                        <ComboBoxItem Content="LIGHT"/>
-                                        <ComboBoxItem Content="MEDIUM"/>
-                                        <ComboBoxItem Content="BEAST"/>
-                                        <ComboBoxItem Content="NIGHTMARE"/>
-                                    </ComboBox>
-                                    <ComboBox SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock3Method, ElementName=lvHackerList}" Grid.Column="4" Margin="2" Grid.Row="4">
-                                        <ComboBoxItem Content="Score"/>
-                                        <ComboBoxItem Content="Full Combo"/>
-                                    </ComboBox>
-                                    <TextBox Text="{Binding Path=SelectedItem.Lock1_Goal, ElementName=lvHackerList}" Grid.Column="5" Margin="2" Grid.Row="4"/>
-                                    
-                                    <Label Content="Lock 4: " HorizontalAlignment="Right" Grid.Column="0" Grid.Row="5"/>
-                                    <TextBox Text="{Binding Path=SelectedItem.Lock4_SongID, ElementName=lvHackerList}" Grid.Column="1" Margin="2" Grid.Row="5"/>
-                                    <Button Name="btHackerLock4" Click="btHackerUnlockedSong_Click" Content="Assign song" Grid.Column="2" Margin="2" Grid.Row="5"/>
-                                    <ComboBox SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock4Difficulty, ElementName=lvHackerList}" Grid.Column="3" Margin="2" Grid.Row="5">
-                                        <ComboBoxItem Content="LIGHT"/>
-                                        <ComboBoxItem Content="MEDIUM"/>
-                                        <ComboBoxItem Content="BEAST"/>
-                                        <ComboBoxItem Content="NIGHTMARE"/>
-                                    </ComboBox>
-                                    <ComboBox SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock4Method, ElementName=lvHackerList}" Grid.Column="4" Margin="2" Grid.Row="5">
-                                        <ComboBoxItem Content="Score"/>
-                                        <ComboBoxItem Content="Full Combo"/>
-                                    </ComboBox>
-                                    <TextBox Text="{Binding Path=SelectedItem.Lock1_Goal, ElementName=lvHackerList}" Grid.Column="5" Margin="2" Grid.Row="5"/>
-                                    
-                                    <Label Content="Lock 5: " HorizontalAlignment="Right" Grid.Column="0" Grid.Row="6"/>
-                                    <TextBox Text="{Binding Path=SelectedItem.Lock5_SongID, ElementName=lvHackerList}" Grid.Column="1" Margin="2" Grid.Row="6"/>
-                                    <Button Name="btHackerLock5" Click="btHackerUnlockedSong_Click" Content="Assign song" Grid.Column="2" Margin="2" Grid.Row="6"/>
-                                    <ComboBox SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock5Difficulty, ElementName=lvHackerList}" Grid.Column="3" Margin="2" Grid.Row="6">
-                                        <ComboBoxItem Content="LIGHT"/>
-                                        <ComboBoxItem Content="MEDIUM"/>
-                                        <ComboBoxItem Content="BEAST"/>
-                                        <ComboBoxItem Content="NIGHTMARE"/>
-                                    </ComboBox>
-                                    <ComboBox SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock5Method, ElementName=lvHackerList}" Grid.Column="4" Margin="2" Grid.Row="6">
-                                        <ComboBoxItem Content="Score"/>
-                                        <ComboBoxItem Content="Full Combo"/>
-                                    </ComboBox>
-                                    <TextBox Text="{Binding Path=SelectedItem.Lock1_Goal, ElementName=lvHackerList}" Grid.Column="5" Margin="2" Grid.Row="6"/>
-                                </Grid>
+                                        <Label Content="Chain ID: " HorizontalAlignment="Right" Grid.Column="0"/>
+                                        <xctk:IntegerUpDown Value="{Binding Path=SelectedItem.ID, ElementName=lvHackerList}" Margin="2" Grid.Column="1"/>
+                                    </Grid>
+                                    <!--Update ID-->
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="1*"/>
+                                            <ColumnDefinition Width="2*"/>
+                                        </Grid.ColumnDefinitions>
 
-                                <Separator Margin="10"/>
-                            </StackPanel>
+                                        <Label Content="Update ID: " HorizontalAlignment="Right" Grid.Column="0"/>
+                                        <xctk:IntegerUpDown Value="{Binding Path=SelectedItem.Update, ElementName=lvHackerList}" Margin="2" Grid.Column="1"/>
+                                    </Grid>
+                                    <!--Hacker Level-->
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="1*"/>
+                                            <ColumnDefinition Width="2*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Label Content="HACKER LEVEL: " HorizontalAlignment="Right" Grid.Column="0"/>
+                                        <ComboBox SelectedIndex="{Binding Path=SelectedItem.HackerLevel, ElementName=lvHackerList}" Margin="2" Grid.Column="1">
+                                            <ComboBoxItem Content="N/A" Visibility="Collapsed"/>
+                                            <ComboBoxItem Content="1"/>
+                                            <ComboBoxItem Content="2"/>
+                                            <ComboBoxItem Content="3"/>
+                                            <ComboBoxItem Content="4"/>
+                                            <ComboBoxItem Content="5"/>
+                                            <ComboBoxItem Content="N/A" Visibility="Collapsed"/>
+                                            <ComboBoxItem Content="N/A" Visibility="Collapsed"/>
+                                            <ComboBoxItem Content="N/A" Visibility="Collapsed"/>
+                                            <ComboBoxItem Content="N/A" Visibility="Collapsed"/>
+                                            <ComboBoxItem Content="[OTHER UNLOCK CONDITION]"/>
+                                        </ComboBox>
+                                    </Grid>
+                                    <Label Content="* Select a song from the list below and click 'Assign song' to set the ID quickly" FontSize="10" HorizontalContentAlignment="Right"/>
+                                    <!--Unlocked ID-->
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="3*"/>
+                                            <ColumnDefinition Width="1*"/>
+                                            <ColumnDefinition Width="5*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Label Content="Unlocked NIGHTMARE song: " HorizontalAlignment="Right" Grid.Column="0"/>
+                                        <xctk:IntegerUpDown Name="tbHackerUnlockedSong" Value="{Binding Path=SelectedItem.UnlockedSong, ElementName=lvHackerList}" Minimum="-1" ValueChanged="HackerChangeSelectedSong" Grid.Column="1" Margin="2"/>
+                                        <Button Name="btHackerUnlockedSong" Click="AssignSong" Content="Assign song" Grid.Column="2" Margin="2"/>
+                                    </Grid>
+
+                                    <Separator Margin="10"/>
+
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="1*"/>
+                                            <ColumnDefinition Width="1*"/>
+                                            <ColumnDefinition Width="2*"/>
+                                            <ColumnDefinition Width="2*"/>
+                                            <ColumnDefinition Width="2*"/>
+                                            <ColumnDefinition Width="2*"/>
+                                            <ColumnDefinition Width="1*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Label Content="[Lock Chain]" HorizontalAlignment="Center" Grid.Column="0" Grid.ColumnSpan="6" FontWeight="Bold"/>
+
+                                        <Label Content="Song ID" HorizontalAlignment="Center" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" FontWeight="Bold"/>
+                                        <Label Content="Song Difficulty" HorizontalAlignment="Center" Grid.Column="3" Grid.Row="1" FontWeight="Bold"/>
+                                        <Label Content="Lock type" HorizontalAlignment="Center" Grid.Column="4" Grid.Row="1" FontWeight="Bold"/>
+                                        <Label Content="Target (% of max)" HorizontalAlignment="Center" Grid.Column="5" Grid.Row="1" FontWeight="Bold"/>
+
+                                        <Label Content="Lock 1: " HorizontalAlignment="Right" Grid.Column="0" Grid.Row="2"/>
+                                        <xctk:IntegerUpDown Name="tbHackerLock1" Value="{Binding Path=SelectedItem.Lock1_SongID, ElementName=lvHackerList}" Minimum="-1" ValueChanged="HackerChangeSelectedSong" Grid.Column="1" Margin="2" Grid.Row="2"/>
+                                        <Button Name="btHackerLock1" Click="AssignSong" Content="Assign song" Grid.Column="2" Margin="2" Grid.Row="2"/>
+                                        <ComboBox Name="cbHackerLock1Diff" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock1Difficulty, ElementName=lvHackerList}" Grid.Column="3" Margin="2" Grid.Row="2">
+                                            <ComboBoxItem Content="LIGHT"/>
+                                            <ComboBoxItem Content="MEDIUM"/>
+                                            <ComboBoxItem Content="BEAST"/>
+                                            <ComboBoxItem Content="NIGHTMARE"/>
+                                        </ComboBox>
+                                        <ComboBox Name="cbHackerLock1Method" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock1Method, ElementName=lvHackerList}" Grid.Column="4" Margin="2" Grid.Row="2">
+                                            <ComboBoxItem Content="Score"/>
+                                            <ComboBoxItem Content="Full Combo"/>
+                                        </ComboBox>
+                                        <xctk:IntegerUpDown Name="cbHackerLock1Goal" Value="{Binding Path=SelectedItem.Lock1_Goal, ElementName=lvHackerList}" Grid.Column="5" Margin="2" Grid.Row="2"/>
+                                        <Button Name="btHackerLock1Clear" Click="AssignSong" Content="Clear" Grid.Column="6" Margin="2" Grid.Row="2"/>
+
+                                        <Label Content="Lock 2: " HorizontalAlignment="Right" Grid.Column="0" Grid.Row="3"/>
+                                        <xctk:IntegerUpDown Name="tbHackerLock2" Value="{Binding Path=SelectedItem.Lock2_SongID, ElementName=lvHackerList}" Minimum="-1" ValueChanged="HackerChangeSelectedSong" Grid.Column="1" Margin="2" Grid.Row="3"/>
+                                        <Button Name="btHackerLock2" Click="AssignSong" Content="Assign song" Grid.Column="2" Margin="2" Grid.Row="3"/>
+                                        <ComboBox Name="cbHackerLock2Diff" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock2Difficulty, ElementName=lvHackerList}" Grid.Column="3" Margin="2" Grid.Row="3">
+                                            <ComboBoxItem Content="LIGHT"/>
+                                            <ComboBoxItem Content="MEDIUM"/>
+                                            <ComboBoxItem Content="BEAST"/>
+                                            <ComboBoxItem Content="NIGHTMARE"/>
+                                        </ComboBox>
+                                        <ComboBox Name="cbHackerLock2Method" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock2Method, ElementName=lvHackerList}" Grid.Column="4" Margin="2" Grid.Row="3">
+                                            <ComboBoxItem Content="Score"/>
+                                            <ComboBoxItem Content="Full Combo"/>
+                                        </ComboBox>
+                                        <xctk:IntegerUpDown Name="cbHackerLock2Goal" Value="{Binding Path=SelectedItem.Lock2_Goal, ElementName=lvHackerList}" Grid.Column="5" Margin="2" Grid.Row="3"/>
+                                        <Button Name="btHackerLock2Clear" Click="AssignSong" Content="Clear" Grid.Column="6" Margin="2" Grid.Row="3"/>
+
+                                        <Label Content="Lock 3: " HorizontalAlignment="Right" Grid.Column="0" Grid.Row="4"/>
+                                        <xctk:IntegerUpDown Name="tbHackerLock3" Value="{Binding Path=SelectedItem.Lock3_SongID, ElementName=lvHackerList}" Minimum="-1" ValueChanged="HackerChangeSelectedSong" Grid.Column="1" Margin="2" Grid.Row="4"/>
+                                        <Button Name="btHackerLock3" Click="AssignSong" Content="Assign song" Grid.Column="2" Margin="2" Grid.Row="4"/>
+                                        <ComboBox Name="cbHackerLock3Diff" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock3Difficulty, ElementName=lvHackerList}" Grid.Column="3" Margin="2" Grid.Row="4">
+                                            <ComboBoxItem Content="LIGHT"/>
+                                            <ComboBoxItem Content="MEDIUM"/>
+                                            <ComboBoxItem Content="BEAST"/>
+                                            <ComboBoxItem Content="NIGHTMARE"/>
+                                        </ComboBox>
+                                        <ComboBox Name="cbHackerLock3Method" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock3Method, ElementName=lvHackerList}" Grid.Column="4" Margin="2" Grid.Row="4">
+                                            <ComboBoxItem Content="Score"/>
+                                            <ComboBoxItem Content="Full Combo"/>
+                                        </ComboBox>
+                                        <xctk:IntegerUpDown Name="cbHackerLock3Goal" Value="{Binding Path=SelectedItem.Lock3_Goal, ElementName=lvHackerList}" Grid.Column="5" Margin="2" Grid.Row="4"/>
+                                        <Button Name="btHackerLock3Clear" Click="AssignSong" Content="Clear" Grid.Column="6" Margin="2" Grid.Row="4"/>
+
+                                        <Label Content="Lock 4: " HorizontalAlignment="Right" Grid.Column="0" Grid.Row="5"/>
+                                        <xctk:IntegerUpDown Name="tbHackerLock4" Value="{Binding Path=SelectedItem.Lock4_SongID, ElementName=lvHackerList}" Minimum="-1" ValueChanged="HackerChangeSelectedSong" Grid.Column="1" Margin="2" Grid.Row="5"/>
+                                        <Button Name="btHackerLock4" Click="AssignSong" Content="Assign song" Grid.Column="2" Margin="2" Grid.Row="5"/>
+                                        <ComboBox Name="cbHackerLock4Diff" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock4Difficulty, ElementName=lvHackerList}" Grid.Column="3" Margin="2" Grid.Row="5">
+                                            <ComboBoxItem Content="LIGHT"/>
+                                            <ComboBoxItem Content="MEDIUM"/>
+                                            <ComboBoxItem Content="BEAST"/>
+                                            <ComboBoxItem Content="NIGHTMARE"/>
+                                        </ComboBox>
+                                        <ComboBox Name="cbHackerLock4Method" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock4Method, ElementName=lvHackerList}" Grid.Column="4" Margin="2" Grid.Row="5">
+                                            <ComboBoxItem Content="Score"/>
+                                            <ComboBoxItem Content="Full Combo"/>
+                                        </ComboBox>
+                                        <xctk:IntegerUpDown Name="cbHackerLock4Goal" Value="{Binding Path=SelectedItem.Lock4_Goal, ElementName=lvHackerList}" Grid.Column="5" Margin="2" Grid.Row="5"/>
+                                        <Button Name="btHackerLock4Clear" Click="AssignSong" Content="Clear" Grid.Column="6" Margin="2" Grid.Row="5"/>
+
+                                        <Label Content="Lock 5: " HorizontalAlignment="Right" Grid.Column="0" Grid.Row="6"/>
+                                        <xctk:IntegerUpDown Name="tbHackerLock5" Value="{Binding Path=SelectedItem.Lock5_SongID, ElementName=lvHackerList}" Minimum="-1" ValueChanged="HackerChangeSelectedSong" Grid.Column="1" Margin="2" Grid.Row="6"/>
+                                        <Button Name="btHackerLock5" Click="AssignSong" Content="Assign song" Grid.Column="2" Margin="2,0,2,2" Grid.Row="6" Height="22" VerticalAlignment="Bottom"/>
+                                        <ComboBox Name="cbHackerLock5Diff" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock5Difficulty, ElementName=lvHackerList}" Grid.Column="3" Margin="2" Grid.Row="6">
+                                            <ComboBoxItem Content="LIGHT"/>
+                                            <ComboBoxItem Content="MEDIUM"/>
+                                            <ComboBoxItem Content="BEAST"/>
+                                            <ComboBoxItem Content="NIGHTMARE"/>
+                                        </ComboBox>
+                                        <ComboBox Name="cbHackerLock5Method" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock5Method, ElementName=lvHackerList}" Grid.Column="4" Margin="2" Grid.Row="6">
+                                            <ComboBoxItem Content="Score"/>
+                                            <ComboBoxItem Content="Full Combo"/>
+                                        </ComboBox>
+                                        <xctk:IntegerUpDown Name="cbHackerLock5Goal" Value="{Binding Path=SelectedItem.Lock5_Goal, ElementName=lvHackerList}" Grid.Column="5" Margin="2" Grid.Row="6"/>
+                                        <Button Name="btHackerLock5Clear" Click="AssignSong" Content="Clear" Grid.Column="6" Margin="2" Grid.Row="6"/>
+                                    </Grid>
+
+                                    <Separator Margin="10"/>
+                                </StackPanel>
+
+                                <ListView x:Name="lvHackerMusicList" Margin="3" Grid.Row="1">
+                                    <ListView.View>
+                                        <GridView AllowsColumnReorder="False">
+                                            <GridViewColumn DisplayMemberBinding="{Binding Path=ID}" Width="32">ID</GridViewColumn>
+                                            <GridViewColumn DisplayMemberBinding="{Binding Path=Title}" Width="auto">Title</GridViewColumn>
+                                            <GridViewColumn DisplayMemberBinding="{Binding Path=SongArtist}" Width="auto">Artist</GridViewColumn>
+                                            <GridViewColumn DisplayMemberBinding="{Binding Path=DisplayedBPM}" Width="72">BPM</GridViewColumn>
+                                            <GridViewColumn DisplayMemberBinding="{Binding Path=DisplayedDifficultyLight}" Width="64">LIGHT</GridViewColumn>
+                                            <GridViewColumn DisplayMemberBinding="{Binding Path=DisplayedDifficultyMedium}" Width="64">MEDIUM</GridViewColumn>
+                                            <GridViewColumn DisplayMemberBinding="{Binding Path=DisplayedDifficultyBeast}" Width="64">BEAST</GridViewColumn>
+                                            <GridViewColumn DisplayMemberBinding="{Binding Path=DisplayedDifficultyNightmare}" Width="72">NIGHTMARE</GridViewColumn>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </Grid>
                         </TabItem>
                     </TabControl>
                 </Grid>
@@ -714,7 +769,8 @@
                 <Label Content="To be added...." HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </TabItem>
             <TabItem Header="HIGH TENSION Sheet">
-                <Grid>
+                <Label Content="To be added...." HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <!--<Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
@@ -733,7 +789,7 @@
                         </ListView.View>
                     </ListView>
 
-                    <!--Control panel-->
+                    --><!--Control panel--><!--
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
@@ -747,11 +803,11 @@
                         <Button Content="Clear list" Margin="2" Click="bClear_MusicList_Click" Grid.Column="3"/>
                     </Grid>
 
-                    <!--Metadata panel-->
+                    --><!--Metadata panel--><!--
                     <TabControl Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
                         <TabItem Header="Common Properties">
                             <StackPanel>
-                                <!--Song Name-->
+                                --><!--Song Name--><!--
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="1*"/>
@@ -761,12 +817,12 @@
                                     <Label Content="Song Name: " HorizontalAlignment="Right" Grid.Column="0"/>
                                     <ComboBox x:Name="cbHTSongName" Text="{Binding Path=SelectedItem.SongName, ElementName=lvHTSheet}" Margin="2" Grid.Column="1" IsEditable="True" IsTextSearchEnabled="True"/>
                                 </Grid>
-                                <!--Is Enabled-->
+                                --><!--Is Enabled--><!--
                                 <CheckBox x:Name="cbHTEnabled" Content="Is HIGH TENSION enabled for this song?" IsChecked="{Binding Path=SelectedItem.IsEnabled, ElementName=lvHTSheet}" HorizontalAlignment="Center" Margin="2" Grid.Column="1"/>
 
                                 <Separator Margin="10"/>
 
-                                <!--Data-->
+                                --><!--Data--><!--
                                 <Grid IsEnabled="{Binding IsChecked, ElementName=cbHTEnabled}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="1*"/>
@@ -784,19 +840,19 @@
                                     <Label Content="Note Type" HorizontalAlignment="Center" Grid.Column="0" TextBlock.FontWeight="Bold"/>
                                     <Label Content="Particle Texture file (.png/.dds/.bmp)" HorizontalAlignment="Center" Grid.Column="1" TextBlock.FontWeight="Bold"/>
                                     <Label Content="Particle Motion file (.pm)" HorizontalAlignment="Center" Grid.Column="2" TextBlock.FontWeight="Bold"/>
-                                    
+
                                     <Label Content="Normal: " HorizontalAlignment="Right" Grid.Column="0" Grid.Row="1"/>
                                     <TextBox Text="{Binding Path=SelectedItem.NormalTexture, ElementName=lvHTSheet}" Margin="2" Grid.Column="1" Grid.Row="1"/>
                                     <TextBox Text="{Binding Path=SelectedItem.NormalMotion, ElementName=lvHTSheet}" Margin="2" Grid.Column="2" Grid.Row="1"/>
-                                    
+
                                     <Label Content="Long: " HorizontalAlignment="Right" Grid.Column="0" Grid.Row="2"/>
                                     <TextBox Text="{Binding Path=SelectedItem.LongTexture, ElementName=lvHTSheet}" Margin="2" Grid.Column="1" Grid.Row="2"/>
                                     <TextBox Text="{Binding Path=SelectedItem.LongMotion, ElementName=lvHTSheet}" Margin="2" Grid.Column="2" Grid.Row="2"/>
-                                    
+
                                     <Label Content="Slash: " HorizontalAlignment="Right" Grid.Column="0" Grid.Row="3"/>
                                     <TextBox Text="{Binding Path=SelectedItem.SlashTexture, ElementName=lvHTSheet}" Margin="2" Grid.Column="1" Grid.Row="3"/>
                                     <TextBox Text="{Binding Path=SelectedItem.SlashMotion, ElementName=lvHTSheet}" Margin="2" Grid.Column="2" Grid.Row="3"/>
-                                    
+
                                     <Label Content="Stream: " HorizontalAlignment="Right" Grid.Column="0" Grid.Row="4"/>
                                     <TextBox Text="{Binding Path=SelectedItem.StreamTexture, ElementName=lvHTSheet}" Margin="2" Grid.Column="1" Grid.Row="4"/>
                                     <TextBox Text="{Binding Path=SelectedItem.StreamMotion, ElementName=lvHTSheet}" Margin="2" Grid.Column="2" Grid.Row="4"/>
@@ -804,7 +860,7 @@
                             </StackPanel>
                         </TabItem>
                     </TabControl>
-                </Grid>
+                </Grid>-->
             </TabItem>
             <TabItem Header="Particle Motion Editor">
                 <Label Content="To be added...." HorizontalAlignment="Center" VerticalAlignment="Center"/>

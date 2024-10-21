@@ -17,7 +17,7 @@ namespace BST_SheetsEditor
 		public void UpdateDisplayedHeaders(MusicList musicList)
 		{
 			foreach (Chain entry in Entries)
-				if (entry.GetType() == typeof(Chain)) (entry as Chain).UpdateDisplayedHeader(musicList);
+				entry.UpdateDisplayedHeader(musicList);
 		}
 
 		public static HackerList ParseCSV(string[] data, MusicList musicList)
@@ -36,9 +36,9 @@ namespace BST_SheetsEditor
 				Chain chain = new Chain()
 				{
 					ID = int.Parse(entryData[0]),
-					Unknown1 = int.Parse(entryData[1]),
+					Update = int.Parse(entryData[1]),
 					UnlockedSong = int.Parse(entryData[2]),
-					Unknown2 = int.Parse(entryData[3]),
+					HackerLevel = int.Parse(entryData[3]),
 					Lock1_SongID = int.Parse(entryData[4]),
 					Lock1_SongDifficulty = entryData[5],
 					Lock1_CompletionMethod = entryData[6],
@@ -61,8 +61,8 @@ namespace BST_SheetsEditor
 					Lock5_Goal = int.Parse(entryData[23]),
 				};
 
-				chain.DisplayedUnlockedSong = musicList.GetTitleArtist(chain.ID);
-				chain.DisplayedUnlockedDifficulty = musicList.Songs[chain.ID].DisplayedDifficultyNightmare;
+				chain.DisplayedUnlockedSong = musicList.GetTitleArtist(chain.UnlockedSong);
+				chain.DisplayedUnlockedDifficulty = chain.UnlockedSong == -1 ? "" : musicList.Songs[chain.UnlockedSong].DisplayedDifficultyNightmare;
 
 				result.Entries.Add(chain);
 			}
@@ -70,7 +70,49 @@ namespace BST_SheetsEditor
 			return result;
 		}
 
-		public class Chain
+        public static string[] CreateCSV(HackerList hackerList)
+        {
+            List<string> result = new List<string>();
+
+            result.Add($"// BeastHacker : {DateTime.Today.ToString("yyyy-MM-dd")}");
+
+
+            foreach (Chain chain in hackerList.Entries)
+            {
+                result.Add(
+                    $"{chain.ID}\uFF5C" +
+                    $"{chain.Update}\uFF5C" +
+                    $"{chain.UnlockedSong}\uFF5C" +
+                    $"{chain.HackerLevel}\uFF5C" +
+                    $"{chain.Lock1_SongID}\uFF5C" +
+                    $"{chain.Lock1_SongDifficulty}\uFF5C" +
+                    $"{chain.Lock1_CompletionMethod}\uFF5C" +
+                    $"{chain.Lock1_Goal}\uFF5C" +
+                    $"{chain.Lock2_SongID}\uFF5C" +
+                    $"{chain.Lock2_SongDifficulty}\uFF5C" +
+                    $"{chain.Lock2_CompletionMethod}\uFF5C" +
+                    $"{chain.Lock2_Goal}\uFF5C" +
+                    $"{chain.Lock3_SongID}\uFF5C" +
+                    $"{chain.Lock3_SongDifficulty}\uFF5C" +
+                    $"{chain.Lock3_CompletionMethod}\uFF5C" +
+                    $"{chain.Lock3_Goal}\uFF5C" +
+                    $"{chain.Lock4_SongID}\uFF5C" +
+                    $"{chain.Lock4_SongDifficulty}\uFF5C" +
+                    $"{chain.Lock4_CompletionMethod}\uFF5C" +
+                    $"{chain.Lock4_Goal}\uFF5C" +
+                    $"{chain.Lock5_SongID}\uFF5C" +
+                    $"{chain.Lock5_SongDifficulty}\uFF5C" +
+                    $"{chain.Lock5_CompletionMethod}\uFF5C" +
+                    $"{chain.Lock5_Goal}\uFF5C"
+                );
+            }
+
+            result.Add("EOF");
+
+            return result.ToArray();
+        }
+
+        public class Chain
 		{
 			/// <summary>
 			/// ID of this unlock chain in the list.
@@ -78,9 +120,9 @@ namespace BST_SheetsEditor
 			public int ID { get; set; }
 
 			/// <summary>
-			/// Unknown. Random guess - required BEAST RANK to unlock the chain.
+			/// Update ID.
 			/// </summary>
-			public int Unknown1 { get; set; }
+			public int Update { get; set; }
 
 			/// <summary>
 			/// ID of the song, which NIGHTMARE chart is unlocked as a result of completing this chain.
@@ -91,22 +133,24 @@ namespace BST_SheetsEditor
 			public string DisplayedUnlockedDifficulty { get; set; }
 
 			/// <summary>
-			/// Unknown. Seems to be related to HACKER LEVEL.
+			/// HACKER LEVEL.
 			/// </summary>
-			public int Unknown2 { get; set; }
+			public int HackerLevel { get; set; }
 
 			public string DisplayedHackerLevel
 			{
 				get 
 				{
+					if (HackerLevel == 10) return "[OTHER UNLOCK CONDITIONS]";
+
 					string result = "";
 
-					for (int i = 0; i < Unknown2; i++)
+					for (int i = 0; i < HackerLevel; i++)
 					{
 						result += '\u2B24';
 					}
 
-					return $"[{Unknown2}] " + result.PadRight(5, '\u25CB');
+					return $"[{HackerLevel}] " + result.PadRight(5, '\u25CB');
 				}
 			}
 
@@ -132,7 +176,7 @@ namespace BST_SheetsEditor
 						1 => "MEDIUM",
 						2 => "BEAST",
 						3 => "NIGHT",
-						_ => "LIGHT"
+						_ => "-"
 					};
 				}
 				get
@@ -144,7 +188,7 @@ namespace BST_SheetsEditor
 						"BEAST" => 2,
 						"NIGHT" => 3,
 						"NIGHTMARE" => 3,
-						_ => 0,
+						_ => -1,
 					};
 				}
 			}
@@ -164,7 +208,7 @@ namespace BST_SheetsEditor
 					{
 						0 => "SCORE",
 						1 => "FULL",
-						_ => "SCORE"
+						_ => "-"
 					};
 				}
 				get
@@ -173,7 +217,7 @@ namespace BST_SheetsEditor
 					{
 						"SCORE" => 0,
 						"FULL" => 1,
-						_ => 0,
+						_ => -1,
 					};
 				}
 			}
@@ -205,7 +249,7 @@ namespace BST_SheetsEditor
 						1 => "MEDIUM",
 						2 => "BEAST",
 						3 => "NIGHT",
-						_ => "LIGHT"
+						_ => "-"
 					};
 				}
 				get
@@ -217,7 +261,7 @@ namespace BST_SheetsEditor
 						"BEAST" => 2,
 						"NIGHT" => 3,
 						"NIGHTMARE" => 3,
-						_ => 0,
+						_ => -1,
 					};
 				}
 			}
@@ -237,7 +281,7 @@ namespace BST_SheetsEditor
 					{
 						0 => "SCORE",
 						1 => "FULL",
-						_ => "SCORE"
+						_ => "-"
 					};
 				}
 				get
@@ -246,7 +290,7 @@ namespace BST_SheetsEditor
 					{
 						"SCORE" => 0,
 						"FULL" => 1,
-						_ => 0,
+						_ => -1,
 					};
 				}
 			}
@@ -278,7 +322,7 @@ namespace BST_SheetsEditor
 						1 => "MEDIUM",
 						2 => "BEAST",
 						3 => "NIGHT",
-						_ => "LIGHT"
+						_ => "-"
 					};
 				}
 				get
@@ -290,7 +334,7 @@ namespace BST_SheetsEditor
 						"BEAST" => 2,
 						"NIGHT" => 3,
 						"NIGHTMARE" => 3,
-						_ => 0,
+						_ => -1,
 					};
 				}
 			}
@@ -310,7 +354,7 @@ namespace BST_SheetsEditor
 					{
 						0 => "SCORE",
 						1 => "FULL",
-						_ => "SCORE"
+						_ => "-"
 					};
 				}
 				get
@@ -319,7 +363,7 @@ namespace BST_SheetsEditor
 					{
 						"SCORE" => 0,
 						"FULL" => 1,
-						_ => 0,
+						_ => -1,
 					};
 				}
 			}
@@ -351,7 +395,7 @@ namespace BST_SheetsEditor
 						1 => "MEDIUM",
 						2 => "BEAST",
 						3 => "NIGHT",
-						_ => "LIGHT"
+						_ => "-"
 					};
 				}
 				get
@@ -363,7 +407,7 @@ namespace BST_SheetsEditor
 						"BEAST" => 2,
 						"NIGHT" => 3,
 						"NIGHTMARE" => 3,
-						_ => 0,
+						_ => -1,
 					};
 				}
 			}
@@ -383,7 +427,7 @@ namespace BST_SheetsEditor
 					{
 						0 => "SCORE",
 						1 => "FULL",
-						_ => "SCORE"
+						_ => "-"
 					};
 				}
 				get
@@ -392,7 +436,7 @@ namespace BST_SheetsEditor
 					{
 						"SCORE" => 0,
 						"FULL" => 1,
-						_ => 0,
+						_ => -1,
 					};
 				}
 			}
@@ -424,7 +468,7 @@ namespace BST_SheetsEditor
 						1 => "MEDIUM",
 						2 => "BEAST",
 						3 => "NIGHT",
-						_ => "LIGHT"
+						_ => "-"
 					};
 				}
 				get
@@ -436,7 +480,7 @@ namespace BST_SheetsEditor
 						"BEAST" => 2,
 						"NIGHT" => 3,
 						"NIGHTMARE" => 3,
-						_ => 0,
+						_ => -1,
 					};
 				}
 			}
@@ -461,7 +505,7 @@ namespace BST_SheetsEditor
 					{
 						0 => "SCORE",
 						1 => "FULL",
-						_ => "SCORE"
+						_ => "-"
 					};
 				}
 				get
@@ -470,14 +514,14 @@ namespace BST_SheetsEditor
 					{
 						"SCORE" => 0,
 						"FULL" => 1,
-						_ => 0,
+						_ => -1,
 					};
 				}
 			}
 
 			public void UpdateDisplayedHeader(MusicList musicList)
 			{
-				DisplayedUnlockedSong = musicList.GetTitleArtist(ID);
+				DisplayedUnlockedSong = musicList.GetTitleArtist(UnlockedSong);
 			}
 		}
 	}

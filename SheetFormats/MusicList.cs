@@ -15,7 +15,7 @@ namespace BST_SheetsEditor
 		public string GetTitleArtist(int id)
 		{
             if (id < Songs.Count && id >= 0)
-                return $"{Songs[id].SongArtist} - {Songs[id].Title}";
+                return $"[ID: {id}] {Songs[id].SongArtist}   /   {Songs[id].Title}";
             else
                 return "[INVALID SONG]";
 		}
@@ -53,8 +53,8 @@ namespace BST_SheetsEditor
 					File = entry[5],
 					Movie = entry[6],
 					Unknown1 = entry[7] == "" ? 0 : int.Parse(entry[7]),
-					MinimumBPM = float.Parse(entry[8], new CultureInfo("jp-JP") { NumberFormat = new NumberFormatInfo() { NumberDecimalSeparator = "," } }),
-					MaximumBPM = float.Parse(entry[9], new CultureInfo("jp-JP") { NumberFormat = new NumberFormatInfo() { NumberDecimalSeparator = "," } }),
+					MinimumBPM = float.Parse(entry[8], new CultureInfo(App.LocaleName) { NumberFormat = new NumberFormatInfo() { NumberDecimalSeparator = "," } }),
+					MaximumBPM = float.Parse(entry[9], new CultureInfo(App.LocaleName) { NumberFormat = new NumberFormatInfo() { NumberDecimalSeparator = "," } }),
 					DifficultyLight = entry[10],
 					DifficultyMedium = entry[11],
 					DifficultyBeast = entry[12],
@@ -67,7 +67,7 @@ namespace BST_SheetsEditor
 					Unknown4 = entry[19],
 					License = entry[20],
 					UnlockingMethod = entry[21],
-					Unknown5 = int.Parse(entry[22]),
+					Update = int.Parse(entry[22]),
 					Unknown6 = int.Parse(entry[23]),
                     EventHandler = entry[24],
                     Unknown7 = int.Parse(entry[25]),
@@ -101,8 +101,8 @@ namespace BST_SheetsEditor
                     $"{song.File}\uFF5C" +
                     $"{song.Movie}\uFF5C" +
                     $"{song.Unknown1}\uFF5C" +
-                    $"{song.MinimumBPM.ToString(new CultureInfo("jp-JP") { NumberFormat = new NumberFormatInfo() { NumberDecimalSeparator = "," } })}\uFF5C" +
-                    $"{song.MaximumBPM.ToString(new CultureInfo("jp-JP") { NumberFormat = new NumberFormatInfo() { NumberDecimalSeparator = "," } })}\uFF5C" +
+                    $"{song.MinimumBPM.ToString(new CultureInfo(App.LocaleName) { NumberFormat = new NumberFormatInfo() { NumberDecimalSeparator = "," } })}\uFF5C" +
+                    $"{song.MaximumBPM.ToString(new CultureInfo(App.LocaleName) { NumberFormat = new NumberFormatInfo() { NumberDecimalSeparator = "," } })}\uFF5C" +
                     $"{song.DifficultyLight}\uFF5C" +
                     $"{song.DifficultyMedium}\uFF5C" +
                     $"{song.DifficultyBeast}\uFF5C" +
@@ -115,7 +115,7 @@ namespace BST_SheetsEditor
                     $"{song.Unknown4}\uFF5C" +
                     $"{song.License}\uFF5C" +
                     $"{song.UnlockingMethod}\uFF5C" +
-                    $"{song.Unknown5}\uFF5C" +
+                    $"{song.Update}\uFF5C" +
                     $"{song.Unknown6}\uFF5C" +
                     $"{song.EventHandler}\uFF5C" +
                     $"{song.Unknown7}\uFF5C" +
@@ -241,8 +241,8 @@ namespace BST_SheetsEditor
                 {
                     return DifficultyLight switch
                     {
-                        "-1" => "[N/A]",
-                        "99" => "\u795E",
+						"-1" => "",
+						"99" => "\u795E",
                         _ => DifficultyLight,
                     };
                 }
@@ -312,8 +312,8 @@ namespace BST_SheetsEditor
                 {
                     return DifficultyMedium switch
                     {
-                        "-1" => "[N/A]",
-                        "99" => "\u795E",
+						"-1" => "",
+						"99" => "\u795E",
                         _ => DifficultyMedium,
                     };
                 }
@@ -383,8 +383,8 @@ namespace BST_SheetsEditor
                 {
                     return DifficultyBeast switch
                     {
-                        "-1" => "[N/A]",
-                        "99" => "\u795E",
+						"-1" => "",
+						"99" => "\u795E",
                         _ => DifficultyBeast,
                     };
                 }
@@ -454,7 +454,7 @@ namespace BST_SheetsEditor
                 {
                     return DifficultyNightmare switch
                     {
-                        "-1" => "[N/A]",
+                        "-1" => "",
                         "99" => "\u795E",
                         _ => DifficultyNightmare,
                     };
@@ -556,9 +556,9 @@ namespace BST_SheetsEditor
             public string UnlockingMethod { get; set; }
 
             /// <summary>
-            /// Unknown. Presumably used for events.
+            /// Update ID.
             /// </summary>
-			public int Unknown5 { get; set; }
+			public int Update { get; set; }
 
             /// <summary>
             /// Unknown. Values other than 0 only found on BEAST CRISIS songs.
