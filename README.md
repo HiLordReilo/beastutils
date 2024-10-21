@@ -7,7 +7,7 @@ Each utility is placed in its own branch, with `main` acting as a sort of hub to
 |Utility|Description|Release link|
 |-------|-----------|-------------|
 | [bsthsmc](https://github.com/HiLordReilo/beastutils/tree/bsthsmc) | **B**eat**St**ream **H**it**s**ound **M**od **C**reator. A convenient way to inject custom hitsounds into the game. | [Link](https://github.com/HiLordReilo/beastutils/releases/tag/BST_HitsoundModCreator) |
-| [bestise](https://github.com/HiLordReilo/beastutils/tree/bestise) | **Be**at**St**ream **I**nfo **S**heets **E**ditor. A convenient way to edit various csv files found in the game (`musiclist.csv`, `hackerlist.csv`, `courselist.csv` and more). | `none` |
+| [bestise](https://github.com/HiLordReilo/beastutils/tree/bestise) | **Be**at**St**ream **I**nfo **S**heets **E**ditor. A convenient way to edit various csv files found in the game (`musiclist.csv`, `hackerlist.csv`, `courselist.csv` and more). | [Link](https://github.com/HiLordReilo/beastutils/releases/tag/BST_SheetsEditor) |
 
 # Additional utils
 These utilities are not a part of this repository, but still are very useful for modding.
