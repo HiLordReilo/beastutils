@@ -10,7 +10,7 @@ While technically those are human-readable text files, they almost never provide
 | Name | Location | Contents |
 |------|----------|---------|
 | Music List | `./sound/musiclist.csv` | Songlist data. |
-| BEAST HACKER List | `./others/hackerlist.csv` | BEAST HACKER unlock system definitions. |
+| BEAST HACKER List | `./others/hacker_list.csv` | BEAST HACKER unlock system definitions. |
 | Course Mode List | `./others/courselist.csv` | Course Mode course definitions. |
 | BEAST CRISIS List | `data2/others/crysislist.csv` | BEAST CRISIS unlock system definitions. |
 | Character List | `data2/others/chara_list.csv` | Aibou (character) definitions. |
