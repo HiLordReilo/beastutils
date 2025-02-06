@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Text.Encodings;
 using System.IO;
 using System.Windows;
@@ -23,6 +24,7 @@ namespace BST_SheetsEditor
 	{
 		MusicList musicList = new MusicList();
 		HackerList hackerList = new HackerList();
+		HTSheet htSheet = new HTSheet();
 		ObservableCollection<string> songNames = new ObservableCollection<string>();
 
 		public MainWindow()
@@ -55,25 +57,131 @@ namespace BST_SheetsEditor
 						musicList = MusicList.ParseCSV(file);
 						lvMusicList.ItemsSource = musicList.Songs;
                         lvHackerMusicList.ItemsSource = musicList.Songs;
+
+						MusicList_Refresh(sender, e);
                         break;
 					case 1:
 						if (musicList.Songs.Count == 0 && MessageBox.Show("Your Music List is currently empty.\nAre you sure you want to continue?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
 							break;
 						hackerList = HackerList.ParseCSV(file, musicList);
 						lvHackerList.ItemsSource = hackerList.Entries;
-						break;
+                        
+						HackerList_Refresh(sender, e);
+                        break;
+					case 5:
+                        if (musicList.Songs.Count == 0 && MessageBox.Show("Your Music List is currently empty.\nAre you sure you want to continue?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
+                            break;
+                        htSheet = HTSheet.ParseTXT(file);
+                        lvHTSheet.ItemsSource = htSheet.Entries;
+
+                        HTSheet_Refresh(sender, e);
+                        break;
 				}
 			}
+		}
+
+		private void miOpenAll_Click(object sender, RoutedEventArgs e)
+		{
+			CommonOpenFileDialog dialog = new CommonOpenFileDialog()
+			{
+				IsFolderPicker = true,
+				Title = "Select root folder of a game or a mod."
+			};
+
+			string[] file = new string[0];
+
+			if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+			{
+				bool isMod = dialog.FileName.Contains("data_mods");
+
+				if(!isMod)
+				{
+					if (MessageBox.Show("Selected folder is not considered to be a mod.\n" +
+						"It is generally not recommended to modify game files directly.\n" +
+						"Press OK if you wish to continue anyway.",
+						"Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Warning) == MessageBoxResult.Cancel)
+						return;
+                }
+
+				// Scan for data sheets
+				// BeatStream AnimTribe
+				{
+                    // MusicList
+                    if (File.Exists(dialog.FileName + Util.SheetPaths["BST2_MusicList"]))
+                    {
+                        file = File.ReadAllLines(dialog.FileName + Util.SheetPaths["BST2_MusicList"], Encoding.GetEncoding("Shift-JIS"));
+
+                        musicList = MusicList.ParseCSV(file);
+
+                        lvMusicList.ItemsSource = musicList.Songs;
+                        lvHackerMusicList.ItemsSource = musicList.Songs;
+
+                        MusicList_Refresh(sender, e);
+                    }
+                    // HackerList
+                    if (File.Exists(dialog.FileName + Util.SheetPaths["BST2_HackerList"]))
+                    {
+                        file = File.ReadAllLines(dialog.FileName + Util.SheetPaths["BST2_HackerList"], Encoding.GetEncoding("Shift-JIS"));
+
+                        hackerList = HackerList.ParseCSV(file, musicList);
+
+                        lvHackerList.ItemsSource = hackerList.Entries;
+
+						HackerList_Refresh(sender, e);
+                    }
+                    // CourseList
+                    if (File.Exists(dialog.FileName + Util.SheetPaths["BST2_CourseList"]))
+                    {
+                        file = File.ReadAllLines(dialog.FileName + Util.SheetPaths["BST2_CourseList"], Encoding.GetEncoding("Shift-JIS"));
+
+						// TODO: Parse list
+                    }
+                    // CrisisList
+                    if (File.Exists(dialog.FileName + Util.SheetPaths["BST2_CrisisList"]))
+                    {
+                        file = File.ReadAllLines(dialog.FileName + Util.SheetPaths["BST2_CrisisList"], Encoding.GetEncoding("Shift-JIS"));
+
+						// TODO: Parse list
+                    }
+                    // CharaList
+                    if (File.Exists(dialog.FileName + Util.SheetPaths["BST2_CharaList"]))
+                    {
+                        file = File.ReadAllLines(dialog.FileName + Util.SheetPaths["BST2_CharaList"], Encoding.GetEncoding("Shift-JIS"));
+
+						// TODO: Parse list
+                    }
+                    // HTSheet
+                    if (File.Exists(dialog.FileName + Util.SheetPaths["BST2_HTSheet"]))
+                    {
+                        file = File.ReadAllLines(dialog.FileName + Util.SheetPaths["BST2_HTSheet"], Encoding.GetEncoding("Shift-JIS"));
+
+                        htSheet = HTSheet.ParseTXT(file);
+
+                        lvHTSheet.ItemsSource = htSheet.Entries;
+
+                        HTSheet_Refresh(sender, e);
+                    }
+                    // ParticleMotion
+                    if (File.Exists(dialog.FileName + Util.SheetPaths["ParticleMotion"]))
+                    {
+                        file = File.ReadAllLines(dialog.FileName + Util.SheetPaths["ParticleMotion"], Encoding.GetEncoding("Shift-JIS"));
+
+						// TODO: Parse list
+                    }
+                }
+            }
 		}
 
 		private void miSaveAs_Click(object sender, RoutedEventArgs e)
 		{
 			SaveFileDialog dialog = new SaveFileDialog()
 			{
-				Filter = "BeatStream Sheet files|*.csv|All files|*.*",
+				Filter = "BeatStream Sheet files|*.csv|BeatStream HIGH-TENSION TIME sheet files|*.txt|All files|*.*",
 			};
+			
+			if (tcSheet.SelectedIndex == 5) dialog.FilterIndex = 1;
 
-			if((bool)dialog.ShowDialog())
+            if ((bool)dialog.ShowDialog())
 			{
 				switch(tcSheet.SelectedIndex)
 				{
@@ -84,6 +192,10 @@ namespace BST_SheetsEditor
 					//Hacker List
 					case 1:
 						File.WriteAllLines(dialog.FileName, HackerList.CreateCSV(hackerList), Encoding.GetEncoding("Shift-JIS"));
+						break;
+					//HIGH TENSION Sheet
+					case 5:
+						File.WriteAllLines(dialog.FileName, HTSheet.CreateTXT(htSheet), Encoding.GetEncoding("Shift-JIS"));
 						break;
 				}
 			}
@@ -102,7 +214,9 @@ namespace BST_SheetsEditor
 			lvMusicList.ItemsSource = musicList.Songs;
 			lvHackerMusicList.ItemsSource = null;
             lvHackerMusicList.ItemsSource = musicList.Songs;
-		}
+
+			UpdateSongNames(sender, e);
+        }
 
 		private void bReindexAndRefresh_MusicList_Click(object sender, RoutedEventArgs e)
 		{
@@ -238,7 +352,60 @@ namespace BST_SheetsEditor
 			}
 		}
 
-		private void tcSheet_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void HTSheet_Refresh(object sender, RoutedEventArgs e)
+        {
+            lvHTSheet.ItemsSource = null;
+            lvHTSheet.ItemsSource = htSheet.Entries;
+
+            UpdateSongNames(sender, e);
+			cbHTSongName.ItemsSource = songNames;
+        }
+
+        private void bRemoveEntry_HTSheet_Click(object sender, RoutedEventArgs e)
+        {
+            if (lvHTSheet.SelectedIndex > -1)
+            {
+                htSheet.Entries.RemoveAt(lvHTSheet.SelectedIndex);
+                HTSheet_Refresh(sender, e);
+            }
+        }
+
+        private void bAddEntry_HTSheet_Click(object sender, RoutedEventArgs e)
+        {
+            HTSheet.Entry newEntry = new HTSheet.Entry()
+            {
+				SongName = "",
+				IsEnabled = false,
+				PM_Tap = "fire_hit.pm",
+				TEX_Tap = "fire.dds",
+				PM_Hold = "fire_hit.pm",
+				TEX_Hold = "fire.dds",
+				PM_Ripple = "fire_hit.pm",
+				TEX_Ripple = "fire.dds",
+				PM_Slash = "fire_hit.pm",
+				TEX_Slash = "fire.dds",
+				PM_Stream = "fire_hit.pm",
+				TEX_Stream = "fire.dds",
+            };
+
+            if (lvHTSheet.SelectedIndex > -1)
+                htSheet.Entries.Insert(lvHTSheet.SelectedIndex + 1, newEntry);
+            else
+                htSheet.Entries.Add(newEntry);
+
+            HTSheet_Refresh(sender, e);
+        }
+
+        private void bClear_HTSheet_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("Are you sure you want to delete all entries from the HIGH TENSION Sheet?\nThis action is irreversible!", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+            {
+                htSheet.Entries.Clear();
+                HTSheet_Refresh(sender, e);
+            }
+        }
+
+        private void tcSheet_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if(e.Source == sender)
 			{
@@ -247,16 +414,18 @@ namespace BST_SheetsEditor
 			}
 		}
 
-		private void UpdateSongNames(object sender, SelectionChangedEventArgs e)
+		private void UpdateSongNames(object sender, RoutedEventArgs e)
 		{
 			songNames.Clear();
 			foreach (MusicList.Music m in musicList.Songs)
 			{
 				songNames.Add(m.Title);
 			}
-		}
 
-		private void AssignSong(object sender, RoutedEventArgs e)
+            cbHTSongName.ItemsSource = songNames;
+        }
+
+        private void AssignSong(object sender, RoutedEventArgs e)
 		{
 			switch(tcSheet.SelectedIndex)
 			{
@@ -356,5 +525,29 @@ namespace BST_SheetsEditor
 			}
         }
 
-	}
+        private void bAppendFromClipboard_HTSheet_Click(object sender, RoutedEventArgs e)
+        {
+			if(Clipboard.ContainsText())
+			{
+				try
+				{
+                    HTSheet.Entry newEntry = HTSheet.Entry.ParseData(Clipboard.GetText());
+
+                    htSheet.Entries.Add(newEntry);
+
+                    HTSheet_Refresh(sender, e);
+
+					lvHTSheet.SelectedIndex = htSheet.Entries.Count - 1;
+                }
+				catch
+				{
+                    MessageBox.Show("Clipboard does not contain HTSheet entry data.", "Error parsing data.", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+			else
+			{
+				MessageBox.Show("Clipboard does not contain HTSheet entry data.", "Error parsing data.", MessageBoxButton.OK, MessageBoxImage.Warning);
+			}
+        }
+    }
 }

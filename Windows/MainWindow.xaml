@@ -16,6 +16,7 @@
         <Menu>
             <MenuItem Header="File">
                 <MenuItem Header="Open" Click="miOpen_Click"/>
+                <MenuItem Header="Open All" Click="miOpenAll_Click"/>
                 <MenuItem Header="Save as...." Click="miSaveAs_Click"/>
                 <MenuItem Header="Exit"/>
             </MenuItem>
@@ -51,6 +52,7 @@
                     <!--Control panel-->
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                             <ColumnDefinition/>
@@ -178,7 +180,7 @@
                                             </LinearGradientBrush>
                                         </Label.Foreground>
                                     </Label>
-                                    <Label Content="NIGHTMARE" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="3" FontWeight="Bold" FontSize="10">
+                                    <Label Content="NIGHTMARE &#8317;&#42781;&#8318;" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="3" FontWeight="Bold" FontSize="10" ToolTip="NIGHTMARE charts do not appear in the song list, unless the are also defined in BEAST HACKER List!">
                                         <Label.Foreground>
                                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                                 <GradientStop Color="Black"/>
@@ -770,8 +772,7 @@
                 <Label Content="To be added...." HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </TabItem>
             <TabItem Header="HIGH TENSION Sheet">
-                <Label Content="To be added...." HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                <!--<Grid>
+                <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
@@ -790,25 +791,27 @@
                         </ListView.View>
                     </ListView>
 
-                    --><!--Control panel--><!--
+                    <!--Control panel-->
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                             <ColumnDefinition/>
+                            <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <Button Content="Add" Margin="2" Click="bAddEntry_MusicList_Click" Grid.Column="0"/>
-                        <Button Content="Remove" Margin="2" Click="bRemoveEntry_MusicList_Click" Grid.Column="1"/>
-                        <Button Content="Refresh and Reindex" Margin="2" Click="bReindexAndRefresh_MusicList_Click" Grid.Column="2"/>
-                        <Button Content="Clear list" Margin="2" Click="bClear_MusicList_Click" Grid.Column="3"/>
+                        <Button Content="Add" Margin="2" Click="bAddEntry_HTSheet_Click" Grid.Column="0"/>
+                        <Button Content="From clipboard" Margin="2" Click="bAppendFromClipboard_HTSheet_Click" Grid.Column="1"/>
+                        <Button Content="Remove" Margin="2" Click="bRemoveEntry_HTSheet_Click" Grid.Column="2"/>
+                        <Button Content="Refresh" Margin="2" Click="HTSheet_Refresh" Grid.Column="3"/>
+                        <Button Content="Clear list" Margin="2" Click="bClear_HTSheet_Click" Grid.Column="4"/>
                     </Grid>
 
-                    --><!--Metadata panel--><!--
+                    <!--Metadata panel-->
                     <TabControl Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
                         <TabItem Header="Common Properties">
                             <StackPanel>
-                                --><!--Song Name--><!--
+                                <!--Song Name-->
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="1*"/>
@@ -818,12 +821,12 @@
                                     <Label Content="Song Name: " HorizontalAlignment="Right" Grid.Column="0"/>
                                     <ComboBox x:Name="cbHTSongName" Text="{Binding Path=SelectedItem.SongName, ElementName=lvHTSheet}" Margin="2" Grid.Column="1" IsEditable="True" IsTextSearchEnabled="True"/>
                                 </Grid>
-                                --><!--Is Enabled--><!--
+                                <!--Is Enabled-->
                                 <CheckBox x:Name="cbHTEnabled" Content="Is HIGH TENSION enabled for this song?" IsChecked="{Binding Path=SelectedItem.IsEnabled, ElementName=lvHTSheet}" HorizontalAlignment="Center" Margin="2" Grid.Column="1"/>
 
                                 <Separator Margin="10"/>
 
-                                --><!--Data--><!--
+                                <!--Data-->
                                 <Grid IsEnabled="{Binding IsChecked, ElementName=cbHTEnabled}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="1*"/>
@@ -836,6 +839,7 @@
                                         <RowDefinition/>
                                         <RowDefinition/>
                                         <RowDefinition/>
+                                        <RowDefinition/>
                                     </Grid.RowDefinitions>
 
                                     <Label Content="Note Type" HorizontalAlignment="Center" Grid.Column="0" TextBlock.FontWeight="Bold"/>
@@ -843,25 +847,29 @@
                                     <Label Content="Particle Motion file (.pm)" HorizontalAlignment="Center" Grid.Column="2" TextBlock.FontWeight="Bold"/>
 
                                     <Label Content="Normal: " HorizontalAlignment="Right" Grid.Column="0" Grid.Row="1"/>
-                                    <TextBox Text="{Binding Path=SelectedItem.NormalTexture, ElementName=lvHTSheet}" Margin="2" Grid.Column="1" Grid.Row="1"/>
-                                    <TextBox Text="{Binding Path=SelectedItem.NormalMotion, ElementName=lvHTSheet}" Margin="2" Grid.Column="2" Grid.Row="1"/>
+                                    <TextBox Text="{Binding Path=SelectedItem.TEX_Tap, ElementName=lvHTSheet}" Margin="2" Grid.Column="1" Grid.Row="1"/>
+                                    <TextBox Text="{Binding Path=SelectedItem.PM_Tap, ElementName=lvHTSheet}" Margin="2" Grid.Column="2" Grid.Row="1"/>
 
                                     <Label Content="Long: " HorizontalAlignment="Right" Grid.Column="0" Grid.Row="2"/>
-                                    <TextBox Text="{Binding Path=SelectedItem.LongTexture, ElementName=lvHTSheet}" Margin="2" Grid.Column="1" Grid.Row="2"/>
-                                    <TextBox Text="{Binding Path=SelectedItem.LongMotion, ElementName=lvHTSheet}" Margin="2" Grid.Column="2" Grid.Row="2"/>
+                                    <TextBox Text="{Binding Path=SelectedItem.TEX_Hold, ElementName=lvHTSheet}" Margin="2" Grid.Column="1" Grid.Row="2"/>
+                                    <TextBox Text="{Binding Path=SelectedItem.PM_Hold, ElementName=lvHTSheet}" Margin="2" Grid.Column="2" Grid.Row="2"/>
 
-                                    <Label Content="Slash: " HorizontalAlignment="Right" Grid.Column="0" Grid.Row="3"/>
-                                    <TextBox Text="{Binding Path=SelectedItem.SlashTexture, ElementName=lvHTSheet}" Margin="2" Grid.Column="1" Grid.Row="3"/>
-                                    <TextBox Text="{Binding Path=SelectedItem.SlashMotion, ElementName=lvHTSheet}" Margin="2" Grid.Column="2" Grid.Row="3"/>
+                                    <Label Content="Ripple: " HorizontalAlignment="Right" Grid.Column="0" Grid.Row="3"/>
+                                    <TextBox Text="{Binding Path=SelectedItem.TEX_Ripple, ElementName=lvHTSheet}" Margin="2" Grid.Column="1" Grid.Row="3"/>
+                                    <TextBox Text="{Binding Path=SelectedItem.PM_Ripple, ElementName=lvHTSheet}" Margin="2" Grid.Column="2" Grid.Row="3"/>
+                                    
+                                    <Label Content="Slash: " HorizontalAlignment="Right" Grid.Column="0" Grid.Row="4"/>
+                                    <TextBox Text="{Binding Path=SelectedItem.TEX_Slash, ElementName=lvHTSheet}" Margin="2" Grid.Column="1" Grid.Row="4"/>
+                                    <TextBox Text="{Binding Path=SelectedItem.PM_Slash, ElementName=lvHTSheet}" Margin="2" Grid.Column="2" Grid.Row="4"/>
 
-                                    <Label Content="Stream: " HorizontalAlignment="Right" Grid.Column="0" Grid.Row="4"/>
-                                    <TextBox Text="{Binding Path=SelectedItem.StreamTexture, ElementName=lvHTSheet}" Margin="2" Grid.Column="1" Grid.Row="4"/>
-                                    <TextBox Text="{Binding Path=SelectedItem.StreamMotion, ElementName=lvHTSheet}" Margin="2" Grid.Column="2" Grid.Row="4"/>
+                                    <Label Content="Stream: " HorizontalAlignment="Right" Grid.Column="0" Grid.Row="5"/>
+                                    <TextBox Text="{Binding Path=SelectedItem.TEX_Stream, ElementName=lvHTSheet}" Margin="2" Grid.Column="1" Grid.Row="5"/>
+                                    <TextBox Text="{Binding Path=SelectedItem.PM_Stream, ElementName=lvHTSheet}" Margin="2" Grid.Column="2" Grid.Row="5"/>
                                 </Grid>
                             </StackPanel>
                         </TabItem>
                     </TabControl>
-                </Grid>-->
+                </Grid>
             </TabItem>
             <TabItem Header="Particle Motion Editor">
                 <Label Content="To be added...." HorizontalAlignment="Center" VerticalAlignment="Center"/>
