@@ -24,58 +24,15 @@ namespace BST_SheetsEditor
 		{
             MusicList result = new MusicList();
 
-            List<string[]> entries = new List<string[]>();
-
-			for(int i = 0; i < data.Length; i++)
+			foreach(string entry in data)
 			{
                 //Line is a comment, skip parsing
-                if (data[i].StartsWith("//"))
-                {
-                    continue;
-                }
+                if (entry.StartsWith("//")) continue;
 
-				entries.Add(data[i].Split('\uFF5C'));
-			}
-
-
-			foreach(string[] entry in entries)
-			{
                 //Line ends the sheet, stop parsing
-                if (entry[0] == "EOF") break;
+                if (entry == "EOF") break;
 
-                Music song = new Music()
-				{
-					ID = int.Parse(entry[0]),
-					Title = entry[1],
-					SortTitle = entry[2],
-					Game = entry[3],
-					Category = entry[4],
-					File = entry[5],
-					Movie = entry[6],
-					Unknown1 = entry[7] == "" ? 0 : int.Parse(entry[7]),
-					MinimumBPM = float.Parse(entry[8], new CultureInfo(App.LocaleName) { NumberFormat = new NumberFormatInfo() { NumberDecimalSeparator = "," } }),
-					MaximumBPM = float.Parse(entry[9], new CultureInfo(App.LocaleName) { NumberFormat = new NumberFormatInfo() { NumberDecimalSeparator = "," } }),
-					DifficultyLight = entry[10],
-					DifficultyMedium = entry[11],
-					DifficultyBeast = entry[12],
-					DifficultyNightmare = entry[13],
-					SongArtist = entry[14],
-					MovieArtist = entry[15],
-					IllustrationArtist = entry[16],
-					Unknown2 = entry[17],
-					Unknown3 = entry[18],
-					Unknown4 = entry[19],
-					License = entry[20],
-					UnlockingMethod = entry[21],
-					Update = int.Parse(entry[22]),
-					Unknown6 = int.Parse(entry[23]),
-                    EventHandler = entry[24],
-                    Unknown7 = int.Parse(entry[25]),
-					MovieRegion = entry[26],
-					MovieReplacement = entry[27],
-					Series = entry[28],
-					AnimeSubtitle = entry[29],
-				};
+                Music song = Music.ParseData(entry);
 
 				result.Songs.Add(song);
 			}
@@ -131,17 +88,17 @@ namespace BST_SheetsEditor
             return result.ToArray();
         }
 
-		public class Music
-		{
-			/// <summary>
-			/// ID of the song in the list.
-			/// </summary>
-			public int ID { get; set; }
+        public class Music
+        {
+            /// <summary>
+            /// ID of the song in the list.
+            /// </summary>
+            public int ID { get; set; }
 
-			/// <summary>
-			/// Song title.
-			/// </summary>
-			public string Title { get; set; }
+            /// <summary>
+            /// Song title.
+            /// </summary>
+            public string Title { get; set; }
 
             /// <summary>
             /// Song title written in full-width katagana. Used for sorting in game.
@@ -241,8 +198,8 @@ namespace BST_SheetsEditor
                 {
                     return DifficultyLight switch
                     {
-						"-1" => "",
-						"99" => "\u795E",
+                        "-1" => "",
+                        "99" => "\u795E",
                         _ => DifficultyLight,
                     };
                 }
@@ -312,8 +269,8 @@ namespace BST_SheetsEditor
                 {
                     return DifficultyMedium switch
                     {
-						"-1" => "",
-						"99" => "\u795E",
+                        "-1" => "",
+                        "99" => "\u795E",
                         _ => DifficultyMedium,
                     };
                 }
@@ -383,8 +340,8 @@ namespace BST_SheetsEditor
                 {
                     return DifficultyBeast switch
                     {
-						"-1" => "",
-						"99" => "\u795E",
+                        "-1" => "",
+                        "99" => "\u795E",
                         _ => DifficultyBeast,
                     };
                 }
@@ -606,6 +563,53 @@ namespace BST_SheetsEditor
             /// Song subtitle. Only displayed for ANIME category songs.
             /// </summary>
             public string AnimeSubtitle { get; set; }
-		}
+
+            /// <summary>
+            /// Parses input
+            /// </summary>
+            /// <param name="data"></param>
+            /// <param name="id"></param>
+            /// <returns></returns>
+            public static Music ParseData(string data, int id = -1)
+            {
+                string[] entry = data.Split('\uFF5C');
+
+                Music song = new Music()
+                {
+                    ID = id == -1 ? int.Parse(entry[0]) : id,
+                    Title = entry[1],
+                    SortTitle = entry[2],
+                    Game = entry[3],
+                    Category = entry[4],
+                    File = entry[5],
+                    Movie = entry[6],
+                    Unknown1 = entry[7] == "" ? 0 : int.Parse(entry[7]),
+                    MinimumBPM = float.Parse(entry[8], new CultureInfo(App.LocaleName) { NumberFormat = new NumberFormatInfo() { NumberDecimalSeparator = "." } }),
+                    MaximumBPM = float.Parse(entry[9], new CultureInfo(App.LocaleName) { NumberFormat = new NumberFormatInfo() { NumberDecimalSeparator = "." } }),
+                    DifficultyLight = entry[10],
+                    DifficultyMedium = entry[11],
+                    DifficultyBeast = entry[12],
+                    DifficultyNightmare = entry[13],
+                    SongArtist = entry[14],
+                    MovieArtist = entry[15],
+                    IllustrationArtist = entry[16],
+                    Unknown2 = entry[17],
+                    Unknown3 = entry[18],
+                    Unknown4 = entry[19],
+                    License = entry[20],
+                    UnlockingMethod = entry[21],
+                    Update = int.Parse(entry[22]),
+                    Unknown6 = int.Parse(entry[23]),
+                    EventHandler = entry[24],
+                    Unknown7 = int.Parse(entry[25]),
+                    MovieRegion = entry[26],
+                    MovieReplacement = entry[27],
+                    Series = entry[28],
+                    AnimeSubtitle = entry[29],
+                };
+
+                return song;
+            }
+        }
 	}
 }

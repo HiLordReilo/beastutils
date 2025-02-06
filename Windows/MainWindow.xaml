@@ -57,9 +57,10 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <Button Content="Add" Margin="2" Click="bAddEntry_MusicList_Click" Grid.Column="0"/>
-                        <Button Content="Remove" Margin="2" Click="bRemoveEntry_MusicList_Click" Grid.Column="1"/>
-                        <Button Content="Refresh and Reindex" Margin="2" Click="bReindexAndRefresh_MusicList_Click" Grid.Column="2"/>
-                        <Button Content="Clear list" Margin="2" Click="bClear_MusicList_Click" Grid.Column="3"/>
+                        <Button Content="From Clipboard" Margin="2" Click="bAppendFromClipboard_MusicList_Click" Grid.Column="1"/>
+                        <Button Content="Remove" Margin="2" Click="bRemoveEntry_MusicList_Click" Grid.Column="2"/>
+                        <Button Content="Refresh and Reindex" Margin="2" Click="bReindexAndRefresh_MusicList_Click" Grid.Column="3"/>
+                        <Button Content="Clear list" Margin="2" Click="bClear_MusicList_Click" Grid.Column="4"/>
                     </Grid>
 
                     <!--Metadata panel-->

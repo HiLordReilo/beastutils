@@ -330,5 +330,31 @@ namespace BST_SheetsEditor
 			
 			return;
 		}
+
+        private void bAppendFromClipboard_MusicList_Click(object sender, RoutedEventArgs e)
+        {
+			if(Clipboard.ContainsText())
+			{
+				try
+				{
+                    MusicList.Music newSong = MusicList.Music.ParseData(Clipboard.GetText(), musicList.Songs.Count);
+
+                    musicList.Songs.Add(newSong);
+
+                    MusicList_Refresh(sender, e);
+
+					lvMusicList.SelectedIndex = musicList.Songs.Count - 1;
+                }
+				catch
+				{
+                    MessageBox.Show("Clipboard does not contain MusicList entry data.", "Error parsing data.", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+			else
+			{
+				MessageBox.Show("Clipboard does not contain MusicList entry data.", "Error parsing data.", MessageBoxButton.OK, MessageBoxImage.Warning);
+			}
+        }
+
 	}
 }
