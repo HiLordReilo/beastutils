@@ -24,8 +24,52 @@ namespace BST_SheetsEditor
             { "BST2_CrisisList", "/data2/others/crysislist.csv" },
             { "BST2_CharaList", "/data2/others/chara_list.csv" },
             { "BST2_HTSheet", "/data2/sound/ht_sheat.txt" },
-            { "StreamPrefab", "/data/stream/" },
-            { "ParticleMotion", "/data2/particle/motionfile/" },
         };
+
+        public static string GetFullDiffName(int id)
+        {
+            switch(id)
+            {
+                default:
+                    return "INVALID DIFFICULTY";
+                case 0:
+                    return "LIGHT";
+                case 1:
+                    return "MEDIUM";
+                case 2:
+                    return "BEAST";
+                case 3:
+                    return "NIGHTMARE";
+            }
+        }
+
+        public static string GetFullDiffName(string id)
+        {
+            switch(id)
+            {
+                default:
+                    return "INVALID DIFFICULTY";
+                case "L":
+                    return "LIGHT";
+                case "LIGHT":
+                    return "LIGHT";
+                case "M":
+                    return "MEDIUM";
+                case "MED":
+                    return "MEDIUM";
+                case "MEDIUM":
+                    return "MEDIUM";
+                case "B":
+                    return "BEAST";
+                case "BEAST":
+                    return "BEAST";
+                case "N":
+                    return "NIGHTMARE";
+                case "NIGHT":
+                    return "NIGHTMARE";
+                case "NIGHTMARE":
+                    return "NIGHTMARE";
+            }
+        }
     }
 }

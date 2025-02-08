@@ -7,7 +7,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
 		mc:Ignorable="d"
 		Title="BeatStream Info Sheets Editor" Width="1280" Height="720">
-    
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -16,8 +16,11 @@
         <Menu>
             <MenuItem Header="File">
                 <MenuItem Header="Open" Click="miOpen_Click"/>
-                <MenuItem Header="Open All" Click="miOpenAll_Click"/>
                 <MenuItem Header="Save as...." Click="miSaveAs_Click"/>
+                <Separator/>
+                <MenuItem Header="Open All" Click="miOpenAll_Click"/>
+                <MenuItem Header="Save Package" Click="miSaveAll_Click"/>
+                <Separator/>
                 <MenuItem Header="Exit"/>
             </MenuItem>
         </Menu>
@@ -539,7 +542,7 @@
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
 
-                    <ListView x:Name="lvHackerList" Margin="3" Grid.Row="0">
+                    <ListView x:Name="lvHackerList" Margin="3" Grid.Row="0" SelectionChanged="UpdateAssignedSongs">
                         <ListView.View>
                             <GridView AllowsColumnReorder="False">
                                 <GridViewColumn DisplayMemberBinding="{Binding Path=ID}" Width="32">ID</GridViewColumn>
@@ -572,7 +575,7 @@
                                     <RowDefinition Height="auto"/>
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
-                                
+
                                 <StackPanel Grid.Row="0">
                                     <!--Chain ID-->
                                     <Grid>
@@ -591,7 +594,7 @@
                                             <ColumnDefinition Width="2*"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <Label Content="Update ID: " HorizontalAlignment="Right" Grid.Column="0"/>
+                                        <Label Content="Update ID&#8317;&#42781;&#8318;: " HorizontalAlignment="Right" Grid.Column="0" ToolTip="Must be 1-10 for it to appear in the game!"/>
                                         <xctk:IntegerUpDown Value="{Binding Path=SelectedItem.Update, ElementName=lvHackerList}" Margin="2" Grid.Column="1"/>
                                     </Grid>
                                     <!--Hacker Level-->
@@ -626,7 +629,7 @@
                                         </Grid.ColumnDefinitions>
 
                                         <Label Content="Unlocked NIGHTMARE song: " HorizontalAlignment="Right" Grid.Column="0"/>
-                                        <xctk:IntegerUpDown Name="tbHackerUnlockedSong" Value="{Binding Path=SelectedItem.UnlockedSong, ElementName=lvHackerList}" Minimum="-1" ValueChanged="HackerChangeSelectedSong" Grid.Column="1" Margin="2"/>
+                                        <xctk:IntegerUpDown Name="tbHackerUnlockedSong" Value="{Binding Path=SelectedItem.UnlockedSong, ElementName=lvHackerList}" Minimum="-1" ValueChanged="ChangeAssignedSong" Grid.Column="1" Margin="2"/>
                                         <Button Name="btHackerUnlockedSong" Click="AssignSong" Content="Assign song" Grid.Column="2" Margin="2"/>
                                     </Grid>
 
@@ -634,6 +637,11 @@
 
                                     <Grid>
                                         <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
                                             <RowDefinition/>
                                             <RowDefinition/>
                                             <RowDefinition/>
@@ -659,10 +667,10 @@
                                         <Label Content="Lock type" HorizontalAlignment="Center" Grid.Column="4" Grid.Row="1" FontWeight="Bold"/>
                                         <Label Content="Target (% of max)" HorizontalAlignment="Center" Grid.Column="5" Grid.Row="1" FontWeight="Bold"/>
 
-                                        <Label Content="Lock 1: " HorizontalAlignment="Right" Grid.Column="0" Grid.Row="2"/>
-                                        <xctk:IntegerUpDown Name="tbHackerLock1" Value="{Binding Path=SelectedItem.Lock1_SongID, ElementName=lvHackerList}" Minimum="-1" ValueChanged="HackerChangeSelectedSong" Grid.Column="1" Margin="2" Grid.Row="2"/>
+                                        <Label Content="Lock 1: " HorizontalAlignment="Right" FontSize="16" VerticalAlignment="Center" Grid.RowSpan="2" Grid.Column="0" Grid.Row="2"/>
+                                        <xctk:IntegerUpDown Name="tbHackerLock1" Value="{Binding Path=SelectedItem.Lock1_SongID, ElementName=lvHackerList}" Minimum="-1" ValueChanged="ChangeAssignedSong" Grid.Column="1" Margin="2" Grid.Row="2"/>
                                         <Button Name="btHackerLock1" Click="AssignSong" Content="Assign song" Grid.Column="2" Margin="2" Grid.Row="2"/>
-                                        <ComboBox Name="cbHackerLock1Diff" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock1Difficulty, ElementName=lvHackerList}" Grid.Column="3" Margin="2" Grid.Row="2">
+                                        <ComboBox Name="cbHackerLock1Diff" SelectionChanged="UpdateAssignedSongs" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock1Difficulty, ElementName=lvHackerList}" Grid.Column="3" Margin="2" Grid.Row="2">
                                             <ComboBoxItem Content="LIGHT"/>
                                             <ComboBoxItem Content="MEDIUM"/>
                                             <ComboBoxItem Content="BEAST"/>
@@ -674,70 +682,75 @@
                                         </ComboBox>
                                         <xctk:IntegerUpDown Name="cbHackerLock1Goal" Value="{Binding Path=SelectedItem.Lock1_Goal, ElementName=lvHackerList}" Grid.Column="5" Margin="2" Grid.Row="2"/>
                                         <Button Name="btHackerLock1Clear" Click="AssignSong" Content="Clear" Grid.Column="6" Margin="2" Grid.Row="2"/>
+                                        <Label Name="lHackerLock1Name" Content="[INVALID SONG]" FontSize="8" Grid.ColumnSpan="6" Grid.Column="1" Grid.Row="3"/>
 
-                                        <Label Content="Lock 2: " HorizontalAlignment="Right" Grid.Column="0" Grid.Row="3"/>
-                                        <xctk:IntegerUpDown Name="tbHackerLock2" Value="{Binding Path=SelectedItem.Lock2_SongID, ElementName=lvHackerList}" Minimum="-1" ValueChanged="HackerChangeSelectedSong" Grid.Column="1" Margin="2" Grid.Row="3"/>
-                                        <Button Name="btHackerLock2" Click="AssignSong" Content="Assign song" Grid.Column="2" Margin="2" Grid.Row="3"/>
-                                        <ComboBox Name="cbHackerLock2Diff" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock2Difficulty, ElementName=lvHackerList}" Grid.Column="3" Margin="2" Grid.Row="3">
+                                        <Label Content="Lock 2: " HorizontalAlignment="Right" FontSize="16" VerticalAlignment="Center" Grid.RowSpan="2" Grid.Column="0" Grid.Row="4"/>
+                                        <xctk:IntegerUpDown Name="tbHackerLock2" Value="{Binding Path=SelectedItem.Lock2_SongID, ElementName=lvHackerList}" Minimum="-1" ValueChanged="ChangeAssignedSong" Grid.Column="1" Margin="2" Grid.Row="4"/>
+                                        <Button Name="btHackerLock2" Click="AssignSong" Content="Assign song" Grid.Column="2" Margin="2" Grid.Row="4"/>
+                                        <ComboBox Name="cbHackerLock2Diff" SelectionChanged="UpdateAssignedSongs" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock2Difficulty, ElementName=lvHackerList}" Grid.Column="3" Margin="2" Grid.Row="4">
                                             <ComboBoxItem Content="LIGHT"/>
                                             <ComboBoxItem Content="MEDIUM"/>
                                             <ComboBoxItem Content="BEAST"/>
                                             <ComboBoxItem Content="NIGHTMARE"/>
                                         </ComboBox>
-                                        <ComboBox Name="cbHackerLock2Method" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock2Method, ElementName=lvHackerList}" Grid.Column="4" Margin="2" Grid.Row="3">
+                                        <ComboBox Name="cbHackerLock2Method" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock2Method, ElementName=lvHackerList}" Grid.Column="4" Margin="2" Grid.Row="4">
                                             <ComboBoxItem Content="Score"/>
                                             <ComboBoxItem Content="Full Combo"/>
                                         </ComboBox>
-                                        <xctk:IntegerUpDown Name="cbHackerLock2Goal" Value="{Binding Path=SelectedItem.Lock2_Goal, ElementName=lvHackerList}" Grid.Column="5" Margin="2" Grid.Row="3"/>
-                                        <Button Name="btHackerLock2Clear" Click="AssignSong" Content="Clear" Grid.Column="6" Margin="2" Grid.Row="3"/>
+                                        <xctk:IntegerUpDown Name="cbHackerLock2Goal" Value="{Binding Path=SelectedItem.Lock2_Goal, ElementName=lvHackerList}" Grid.Column="5" Margin="2" Grid.Row="4"/>
+                                        <Button Name="btHackerLock2Clear" Click="AssignSong" Content="Clear" Grid.Column="6" Margin="2" Grid.Row="4"/>
+                                        <Label Name="lHackerLock2Name" Content="[INVALID SONG]" FontSize="8" Grid.ColumnSpan="3" Grid.Column="1" Grid.Row="5"/>
 
-                                        <Label Content="Lock 3: " HorizontalAlignment="Right" Grid.Column="0" Grid.Row="4"/>
-                                        <xctk:IntegerUpDown Name="tbHackerLock3" Value="{Binding Path=SelectedItem.Lock3_SongID, ElementName=lvHackerList}" Minimum="-1" ValueChanged="HackerChangeSelectedSong" Grid.Column="1" Margin="2" Grid.Row="4"/>
-                                        <Button Name="btHackerLock3" Click="AssignSong" Content="Assign song" Grid.Column="2" Margin="2" Grid.Row="4"/>
-                                        <ComboBox Name="cbHackerLock3Diff" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock3Difficulty, ElementName=lvHackerList}" Grid.Column="3" Margin="2" Grid.Row="4">
+                                        <Label Content="Lock 3: " HorizontalAlignment="Right" FontSize="16" VerticalAlignment="Center" Grid.RowSpan="2" Grid.Column="0" Grid.Row="6"/>
+                                        <xctk:IntegerUpDown Name="tbHackerLock3" Value="{Binding Path=SelectedItem.Lock3_SongID, ElementName=lvHackerList}" Minimum="-1" ValueChanged="ChangeAssignedSong" Grid.Column="1" Margin="2" Grid.Row="6"/>
+                                        <Button Name="btHackerLock3" Click="AssignSong" Content="Assign song" Grid.Column="2" Margin="2" Grid.Row="6"/>
+                                        <ComboBox Name="cbHackerLock3Diff" SelectionChanged="UpdateAssignedSongs" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock3Difficulty, ElementName=lvHackerList}" Grid.Column="3" Margin="2" Grid.Row="6">
                                             <ComboBoxItem Content="LIGHT"/>
                                             <ComboBoxItem Content="MEDIUM"/>
                                             <ComboBoxItem Content="BEAST"/>
                                             <ComboBoxItem Content="NIGHTMARE"/>
                                         </ComboBox>
-                                        <ComboBox Name="cbHackerLock3Method" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock3Method, ElementName=lvHackerList}" Grid.Column="4" Margin="2" Grid.Row="4">
+                                        <ComboBox Name="cbHackerLock3Method" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock3Method, ElementName=lvHackerList}" Grid.Column="4" Margin="2" Grid.Row="6">
                                             <ComboBoxItem Content="Score"/>
                                             <ComboBoxItem Content="Full Combo"/>
                                         </ComboBox>
-                                        <xctk:IntegerUpDown Name="cbHackerLock3Goal" Value="{Binding Path=SelectedItem.Lock3_Goal, ElementName=lvHackerList}" Grid.Column="5" Margin="2" Grid.Row="4"/>
-                                        <Button Name="btHackerLock3Clear" Click="AssignSong" Content="Clear" Grid.Column="6" Margin="2" Grid.Row="4"/>
+                                        <xctk:IntegerUpDown Name="cbHackerLock3Goal" Value="{Binding Path=SelectedItem.Lock3_Goal, ElementName=lvHackerList}" Grid.Column="5" Margin="2" Grid.Row="6"/>
+                                        <Button Name="btHackerLock3Clear" Click="AssignSong" Content="Clear" Grid.Column="6" Margin="2" Grid.Row="6"/>
+                                        <Label Name="lHackerLock3Name" Content="[INVALID SONG]" FontSize="8" Grid.ColumnSpan="3" Grid.Column="1" Grid.Row="7"/>
 
-                                        <Label Content="Lock 4: " HorizontalAlignment="Right" Grid.Column="0" Grid.Row="5"/>
-                                        <xctk:IntegerUpDown Name="tbHackerLock4" Value="{Binding Path=SelectedItem.Lock4_SongID, ElementName=lvHackerList}" Minimum="-1" ValueChanged="HackerChangeSelectedSong" Grid.Column="1" Margin="2" Grid.Row="5"/>
-                                        <Button Name="btHackerLock4" Click="AssignSong" Content="Assign song" Grid.Column="2" Margin="2" Grid.Row="5"/>
-                                        <ComboBox Name="cbHackerLock4Diff" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock4Difficulty, ElementName=lvHackerList}" Grid.Column="3" Margin="2" Grid.Row="5">
+                                        <Label Content="Lock 4: " HorizontalAlignment="Right" FontSize="16" VerticalAlignment="Center" Grid.RowSpan="2" Grid.Column="0" Grid.Row="8"/>
+                                        <xctk:IntegerUpDown Name="tbHackerLock4" Value="{Binding Path=SelectedItem.Lock4_SongID, ElementName=lvHackerList}" Minimum="-1" ValueChanged="ChangeAssignedSong" Grid.Column="1" Margin="2" Grid.Row="8"/>
+                                        <Button Name="btHackerLock4" Click="AssignSong" Content="Assign song" Grid.Column="2" Margin="2" Grid.Row="8"/>
+                                        <ComboBox Name="cbHackerLock4Diff" SelectionChanged="UpdateAssignedSongs" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock4Difficulty, ElementName=lvHackerList}" Grid.Column="3" Margin="2" Grid.Row="8">
                                             <ComboBoxItem Content="LIGHT"/>
                                             <ComboBoxItem Content="MEDIUM"/>
                                             <ComboBoxItem Content="BEAST"/>
                                             <ComboBoxItem Content="NIGHTMARE"/>
                                         </ComboBox>
-                                        <ComboBox Name="cbHackerLock4Method" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock4Method, ElementName=lvHackerList}" Grid.Column="4" Margin="2" Grid.Row="5">
+                                        <ComboBox Name="cbHackerLock4Method" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock4Method, ElementName=lvHackerList}" Grid.Column="4" Margin="2" Grid.Row="8">
                                             <ComboBoxItem Content="Score"/>
                                             <ComboBoxItem Content="Full Combo"/>
                                         </ComboBox>
-                                        <xctk:IntegerUpDown Name="cbHackerLock4Goal" Value="{Binding Path=SelectedItem.Lock4_Goal, ElementName=lvHackerList}" Grid.Column="5" Margin="2" Grid.Row="5"/>
-                                        <Button Name="btHackerLock4Clear" Click="AssignSong" Content="Clear" Grid.Column="6" Margin="2" Grid.Row="5"/>
+                                        <xctk:IntegerUpDown Name="cbHackerLock4Goal" Value="{Binding Path=SelectedItem.Lock4_Goal, ElementName=lvHackerList}" Grid.Column="5" Margin="2" Grid.Row="8"/>
+                                        <Button Name="btHackerLock4Clear" Click="AssignSong" Content="Clear" Grid.Column="6" Margin="2" Grid.Row="8"/>
+                                        <Label Name="lHackerLock4Name" Content="[INVALID SONG]" FontSize="8" Grid.ColumnSpan="3" Grid.Column="1" Grid.Row="9"/>
 
-                                        <Label Content="Lock 5: " HorizontalAlignment="Right" Grid.Column="0" Grid.Row="6"/>
-                                        <xctk:IntegerUpDown Name="tbHackerLock5" Value="{Binding Path=SelectedItem.Lock5_SongID, ElementName=lvHackerList}" Minimum="-1" ValueChanged="HackerChangeSelectedSong" Grid.Column="1" Margin="2" Grid.Row="6"/>
-                                        <Button Name="btHackerLock5" Click="AssignSong" Content="Assign song" Grid.Column="2" Margin="2,0,2,2" Grid.Row="6" Height="22" VerticalAlignment="Bottom"/>
-                                        <ComboBox Name="cbHackerLock5Diff" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock5Difficulty, ElementName=lvHackerList}" Grid.Column="3" Margin="2" Grid.Row="6">
+                                        <Label Content="Lock 5: " HorizontalAlignment="Right" FontSize="16" VerticalAlignment="Center" Grid.RowSpan="2" Grid.Column="0" Grid.Row="10"/>
+                                        <xctk:IntegerUpDown Name="tbHackerLock5" Value="{Binding Path=SelectedItem.Lock5_SongID, ElementName=lvHackerList}" Minimum="-1" ValueChanged="ChangeAssignedSong" Grid.Column="1" Margin="2" Grid.Row="10"/>
+                                        <Button Name="btHackerLock5" Click="AssignSong" Content="Assign song" Grid.Column="2" Margin="2" Grid.Row="10"/>
+                                        <ComboBox Name="cbHackerLock5Diff" SelectionChanged="UpdateAssignedSongs" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock5Difficulty, ElementName=lvHackerList}" Grid.Column="3" Margin="2" Grid.Row="10">
                                             <ComboBoxItem Content="LIGHT"/>
                                             <ComboBoxItem Content="MEDIUM"/>
                                             <ComboBoxItem Content="BEAST"/>
                                             <ComboBoxItem Content="NIGHTMARE"/>
                                         </ComboBox>
-                                        <ComboBox Name="cbHackerLock5Method" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock5Method, ElementName=lvHackerList}" Grid.Column="4" Margin="2" Grid.Row="6">
+                                        <ComboBox Name="cbHackerLock5Method" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndexLock5Method, ElementName=lvHackerList}" Grid.Column="4" Margin="2" Grid.Row="10">
                                             <ComboBoxItem Content="Score"/>
                                             <ComboBoxItem Content="Full Combo"/>
                                         </ComboBox>
-                                        <xctk:IntegerUpDown Name="cbHackerLock5Goal" Value="{Binding Path=SelectedItem.Lock5_Goal, ElementName=lvHackerList}" Grid.Column="5" Margin="2" Grid.Row="6"/>
-                                        <Button Name="btHackerLock5Clear" Click="AssignSong" Content="Clear" Grid.Column="6" Margin="2" Grid.Row="6"/>
+                                        <xctk:IntegerUpDown Name="cbHackerLock5Goal" Value="{Binding Path=SelectedItem.Lock5_Goal, ElementName=lvHackerList}" Grid.Column="5" Margin="2" Grid.Row="10"/>
+                                        <Button Name="btHackerLock5Clear" Click="AssignSong" Content="Clear" Grid.Column="6" Margin="2" Grid.Row="10"/>
+                                        <Label Name="lHackerLock5Name" Content="[INVALID SONG]" FontSize="8" Grid.ColumnSpan="3" Grid.Column="1" Grid.Row="11"/>
                                     </Grid>
 
                                     <Separator Margin="10"/>
@@ -763,7 +776,204 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Course Mode List">
-                <Label Content="To be added...." HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+
+                    <ListView x:Name="lvCourseList" Margin="3" Grid.Row="0" SelectionChanged="UpdateAssignedSongs">
+                        <ListView.View>
+                            <GridView AllowsColumnReorder="False">
+                                <GridViewColumn DisplayMemberBinding="{Binding Path=Title}" Width="350">Course Title</GridViewColumn>
+                                <GridViewColumn DisplayMemberBinding="{Binding Path=Type}" Width="64">Type</GridViewColumn>
+                                <GridViewColumn DisplayMemberBinding="{Binding Path=DisplayedReward}" Width="180">Reward</GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+
+                    <!--Control panel-->
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Button Content="Add" Margin="2" Click="bAddEntry_CourseList_Click" Grid.Column="0"/>
+                        <Button Content="Remove" Margin="2" Click="bRemoveEntry_CourseList_Click" Grid.Column="1"/>
+                        <Button Content="Refresh" Margin="2" Click="CourseList_Refresh" Grid.Column="2"/>
+                        <Button Content="Clear list" Margin="2" Click="bClear_CourseList_Click" Grid.Column="3"/>
+                    </Grid>
+
+                    <!--Metadata panel-->
+                    <TabControl Grid.Column="1" Grid.Row="0" Grid.RowSpan="3">
+                        <TabItem Header="Properties">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+
+                                <StackPanel Grid.Row="0">
+                                    <!--Course Title-->
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="1*"/>
+                                            <ColumnDefinition Width="2*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Label Content="Title: " HorizontalAlignment="Right" Grid.Column="0"/>
+                                        <TextBox Text="{Binding Path=SelectedItem.Title, ElementName=lvCourseList}" Margin="2" Grid.Column="1"/>
+                                    </Grid>
+                                    <!--Update ID-->
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="1*"/>
+                                            <ColumnDefinition Width="2*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Label Content="Update ID&#8317;&#42781;&#8318;: " HorizontalAlignment="Right" Grid.Column="0" ToolTip="Must be 1-4 for it to appear in the game!"/>
+                                        <xctk:IntegerUpDown Value="{Binding Path=SelectedItem.UpdateID, ElementName=lvCourseList}" Margin="2" Grid.Column="1"/>
+                                    </Grid>
+                                    <!--Type and Reward-->
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="3*"/>
+                                            <ColumnDefinition Width="2*"/>
+                                            <ColumnDefinition Width="4*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Label Content="Reward: " HorizontalAlignment="Right" Grid.Column="0"/>
+                                        <ComboBox Text="{Binding Path=SelectedItem.Type, ElementName=lvCourseList}" IsEditable="True" Margin="2" Grid.Column="1">
+                                            RANK
+                                        </ComboBox>
+                                        <xctk:IntegerUpDown Value="{Binding Path=SelectedItem.Reward, ElementName=lvCourseList}" Margin="2" Grid.Column="2"/>
+                                    </Grid>
+
+                                    <Separator Margin="10"/>
+
+                                    <!--Big Icon-->
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="1*"/>
+                                            <ColumnDefinition Width="2*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Label Content="Big Icon: " HorizontalAlignment="Right" Grid.Column="0"/>
+                                        <TextBox Text="{Binding Path=SelectedItem.BigIconName, ElementName=lvCourseList}" Margin="2" Grid.Column="1"/>
+                                    </Grid>
+                                    <!--Small Icon-->
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="1*"/>
+                                            <ColumnDefinition Width="2*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Label Content="Small Icon: " HorizontalAlignment="Right" Grid.Column="0"/>
+                                        <TextBox Text="{Binding Path=SelectedItem.SmallIconName, ElementName=lvCourseList}" Margin="2" Grid.Column="1"/>
+                                    </Grid>
+
+                                    <Separator Margin="10"/>
+
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="1*"/>
+                                            <ColumnDefinition Width="1*"/>
+                                            <ColumnDefinition Width="2*"/>
+                                            <ColumnDefinition Width="2*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Label Content="[Course Songs]" HorizontalAlignment="Center" Grid.ColumnSpan="6" FontWeight="Bold"/>
+
+                                        <Label Content="Song ID" HorizontalAlignment="Center" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" FontWeight="Bold"/>
+                                        <Label Content="Song Difficulty" HorizontalAlignment="Center" Grid.Column="3" Grid.Row="1" FontWeight="Bold"/>
+
+                                        <Label Content="1st Scene: " HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="16" Grid.RowSpan="2" Grid.Column="0" Grid.Row="2"/>
+                                        <xctk:IntegerUpDown Name="tbCourseSong1" Value="{Binding Path=SelectedItem.Song1_ID, ElementName=lvCourseList}" Minimum="0" ValueChanged="ChangeAssignedSong" Grid.Column="1" Margin="2" Grid.Row="2"/>
+                                        <Button Name="btCourseSong1" Click="AssignSong" Content="Assign song" Grid.Column="2" Margin="2" Grid.Row="2"/>
+                                        <ComboBox Name="cbCourseSong1Diff" SelectionChanged="UpdateAssignedSongs" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndex_Song1_Difficulty, ElementName=lvCourseList}" Grid.Column="3" Margin="2" Grid.Row="2">
+                                            <ComboBoxItem Content="LIGHT"/>
+                                            <ComboBoxItem Content="MEDIUM"/>
+                                            <ComboBoxItem Content="BEAST"/>
+                                            <ComboBoxItem Content="NIGHTMARE"/>
+                                        </ComboBox>
+                                        <Label Name="lCourseSong1Name" Content="[INVALID SONG]" FontSize="8" Grid.ColumnSpan="3" Grid.Column="1" Grid.Row="3"/>
+
+                                        <Label Content="2nd Scene: " HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="16" Grid.RowSpan="2" Grid.Column="0" Grid.Row="4"/>
+                                        <xctk:IntegerUpDown Name="tbCourseSong2" Value="{Binding Path=SelectedItem.Song2_ID, ElementName=lvCourseList}" Minimum="0" ValueChanged="ChangeAssignedSong" Grid.Column="1" Margin="2" Grid.Row="4"/>
+                                        <Button Name="btCourseSong2" Click="AssignSong" Content="Assign song" Grid.Column="2" Margin="2" Grid.Row="4"/>
+                                        <ComboBox Name="cbCourseSong2Diff" SelectionChanged="UpdateAssignedSongs" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndex_Song2_Difficulty, ElementName=lvCourseList}" Grid.Column="3" Margin="2" Grid.Row="4">
+                                            <ComboBoxItem Content="LIGHT"/>
+                                            <ComboBoxItem Content="MEDIUM"/>
+                                            <ComboBoxItem Content="BEAST"/>
+                                            <ComboBoxItem Content="NIGHTMARE"/>
+                                        </ComboBox>
+                                        <Label Name="lCourseSong2Name" Content="[INVALID SONG]" FontSize="8" Grid.ColumnSpan="3" Grid.Column="1" Grid.Row="5"/>
+
+                                        <Label Content="3rd Scene: " HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="16" Grid.RowSpan="2" Grid.Column="0" Grid.Row="6"/>
+                                        <xctk:IntegerUpDown Name="tbCourseSong3" Value="{Binding Path=SelectedItem.Song3_ID, ElementName=lvCourseList}" Minimum="0" ValueChanged="ChangeAssignedSong" Grid.Column="1" Margin="2" Grid.Row="6"/>
+                                        <Button Name="btCourseSong3" Click="AssignSong" Content="Assign song" Grid.Column="2" Margin="2" Grid.Row="6"/>
+                                        <ComboBox Name="cbCourseSong3Diff" SelectionChanged="UpdateAssignedSongs" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndex_Song3_Difficulty, ElementName=lvCourseList}" Grid.Column="3" Margin="2" Grid.Row="6">
+                                            <ComboBoxItem Content="LIGHT"/>
+                                            <ComboBoxItem Content="MEDIUM"/>
+                                            <ComboBoxItem Content="BEAST"/>
+                                            <ComboBoxItem Content="NIGHTMARE"/>
+                                        </ComboBox>
+                                        <Label Name="lCourseSong3Name" Content="[INVALID SONG]" FontSize="8" Grid.ColumnSpan="3" Grid.Column="1" Grid.Row="7"/>
+
+                                        <Label Content="4th Scene: " HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="16" Grid.RowSpan="2" Grid.Column="0" Grid.Row="8"/>
+                                        <xctk:IntegerUpDown Name="tbCourseSong4" Value="{Binding Path=SelectedItem.Song4_ID, ElementName=lvCourseList}" Minimum="0" ValueChanged="ChangeAssignedSong" Grid.Column="1" Margin="2" Grid.Row="8"/>
+                                        <Button Name="btCourseSong4" Click="AssignSong" Content="Assign song" Grid.Column="2" Margin="2" Grid.Row="8"/>
+                                        <ComboBox Name="cbCourseSong4Diff" SelectionChanged="UpdateAssignedSongs" SelectedIndex="{Binding Path=SelectedItem.DisplayedIndex_Song4_Difficulty, ElementName=lvCourseList}" Grid.Column="3" Margin="2" Grid.Row="8">
+                                            <ComboBoxItem Content="LIGHT"/>
+                                            <ComboBoxItem Content="MEDIUM"/>
+                                            <ComboBoxItem Content="BEAST"/>
+                                            <ComboBoxItem Content="NIGHTMARE"/>
+                                        </ComboBox>
+                                        <Label Name="lCourseSong4Name" Content="[INVALID SONG]" FontSize="8" Grid.ColumnSpan="3" Grid.Column="1" Grid.Row="9"/>
+                                    </Grid>
+
+                                    <Label Content="* Select a song from the list below and click 'Assign song' to set the ID quickly" FontSize="10" HorizontalContentAlignment="Right"/>
+
+                                    <Separator Margin="10"/>
+                                </StackPanel>
+
+                                <ListView x:Name="lvCourseMusicList" Margin="3" Grid.Row="1">
+                                    <ListView.View>
+                                        <GridView AllowsColumnReorder="False">
+                                            <GridViewColumn DisplayMemberBinding="{Binding Path=ID}" Width="32">ID</GridViewColumn>
+                                            <GridViewColumn DisplayMemberBinding="{Binding Path=Title}" Width="auto">Title</GridViewColumn>
+                                            <GridViewColumn DisplayMemberBinding="{Binding Path=SongArtist}" Width="auto">Artist</GridViewColumn>
+                                            <GridViewColumn DisplayMemberBinding="{Binding Path=DisplayedBPM}" Width="72">BPM</GridViewColumn>
+                                            <GridViewColumn DisplayMemberBinding="{Binding Path=DisplayedDifficultyLight}" Width="64">LIGHT</GridViewColumn>
+                                            <GridViewColumn DisplayMemberBinding="{Binding Path=DisplayedDifficultyMedium}" Width="64">MEDIUM</GridViewColumn>
+                                            <GridViewColumn DisplayMemberBinding="{Binding Path=DisplayedDifficultyBeast}" Width="64">BEAST</GridViewColumn>
+                                            <GridViewColumn DisplayMemberBinding="{Binding Path=DisplayedDifficultyNightmare}" Width="72">NIGHTMARE</GridViewColumn>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </Grid>
+                        </TabItem>
+                    </TabControl>
+                </Grid>
             </TabItem>
             <TabItem Header="BEAST CRISIS List">
                 <Label Content="To be added...." HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -857,7 +1067,7 @@
                                     <Label Content="Ripple: " HorizontalAlignment="Right" Grid.Column="0" Grid.Row="3"/>
                                     <TextBox Text="{Binding Path=SelectedItem.TEX_Ripple, ElementName=lvHTSheet}" Margin="2" Grid.Column="1" Grid.Row="3"/>
                                     <TextBox Text="{Binding Path=SelectedItem.PM_Ripple, ElementName=lvHTSheet}" Margin="2" Grid.Column="2" Grid.Row="3"/>
-                                    
+
                                     <Label Content="Slash: " HorizontalAlignment="Right" Grid.Column="0" Grid.Row="4"/>
                                     <TextBox Text="{Binding Path=SelectedItem.TEX_Slash, ElementName=lvHTSheet}" Margin="2" Grid.Column="1" Grid.Row="4"/>
                                     <TextBox Text="{Binding Path=SelectedItem.PM_Slash, ElementName=lvHTSheet}" Margin="2" Grid.Column="2" Grid.Row="4"/>
@@ -870,12 +1080,6 @@
                         </TabItem>
                     </TabControl>
                 </Grid>
-            </TabItem>
-            <TabItem Header="Particle Motion Editor">
-                <Label Content="To be added...." HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            </TabItem>
-            <TabItem Header="Standard Stream Editor">
-                <Label Content="To be added...." HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </TabItem>
         </TabControl>
     </Grid>

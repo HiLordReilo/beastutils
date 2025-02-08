@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace BST_SheetsEditor
 {
-    class HTSheet
+    public class HTSheet
     {
-        public ObservableCollection<Entry> Entries = new ObservableCollection<Entry>();
+        public ObservableCollection<Entry> Entries { get; set; } = new ObservableCollection<Entry>();
 
         public class Entry
         {
@@ -100,8 +100,9 @@ namespace BST_SheetsEditor
 
             foreach (string entry in data)
             {
-                //Line is a header, skip parsing
+                // Line is a header, skip parsing
                 if (entry.StartsWith("楽曲名")) continue;
+                // Line is empty, skip parsing to avoid problems
                 if (string.IsNullOrEmpty(entry)) continue;
 
                 Entry newEntry = Entry.ParseData(entry);

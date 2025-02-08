@@ -24,7 +24,16 @@ namespace BST_SheetsEditor
 	{
 		MusicList musicList = new MusicList();
 		HackerList hackerList = new HackerList();
+		CourseList courseList = new CourseList();
 		HTSheet htSheet = new HTSheet();
+
+		bool isMusicListLoaded = false;
+		bool isHackerListLoaded = false;
+		bool isCourseListLoaded = false;
+		bool isHTSheetLoaded = false;
+
+		string packagePath = string.Empty;
+
 		ObservableCollection<string> songNames = new ObservableCollection<string>();
 
 		public MainWindow()
@@ -37,43 +46,60 @@ namespace BST_SheetsEditor
 		{
 			OpenFileDialog dialog = new OpenFileDialog()
 			{
-				Filter = "BeatStream Sheet files|*.csv|BeatStream HIGH-TENSION TIME sheet files|*.txt|BeatStream Particle Motion files|*.pm|BeatStream Stream Prefabs|*.str",
+				Filter = "All files|*.*|BeatStream Sheet files|*.csv|BeatStream HIGH-TENSION TIME sheet files|*.txt",
 			};
 
-			string[] file = new string[0];
+            string fileFull = string.Empty;
+            string[] fileLines = new string[0];
 
-			if ((bool)dialog.ShowDialog())
+            if ((bool)dialog.ShowDialog())
 			{
-				file = File.ReadAllLines(dialog.FileName, Encoding.GetEncoding("Shift-JIS"));
+				fileFull = File.ReadAllText(dialog.FileName, Encoding.GetEncoding("Shift-JIS"));
+				fileLines = fileFull.Split('\n');
 
-				if (file[0].StartsWith("// MusicInfoData")) tcSheet.SelectedIndex = 0;
-				if (file[0].StartsWith("// BeastHacker")) tcSheet.SelectedIndex = 1;
-				if (file[0].StartsWith("// CharacterData")) tcSheet.SelectedIndex = 4;
-				if (file[0].StartsWith("楽曲名")) tcSheet.SelectedIndex = 5;
+                if (fileLines[0].StartsWith("// MusicInfoData")) tcSheet.SelectedIndex = 0;
+				if (fileLines[0].StartsWith("// BeastHacker")) tcSheet.SelectedIndex = 1;
+				if (fileLines[0].StartsWith("// CourseInfoData")) tcSheet.SelectedIndex = 2;
+				if (fileLines[0].StartsWith("// CharacterData")) tcSheet.SelectedIndex = 4;
+				if (fileLines[0].StartsWith("楽曲名")) tcSheet.SelectedIndex = 5;
 
                 switch (tcSheet.SelectedIndex)
 				{
 					case 0:
-						musicList = MusicList.ParseCSV(file);
+						musicList = MusicList.ParseCSV(fileLines);
 						lvMusicList.ItemsSource = musicList.Songs;
                         lvHackerMusicList.ItemsSource = musicList.Songs;
+						lvCourseMusicList.ItemsSource = musicList.Songs;
 
+						isMusicListLoaded = true;
 						MusicList_Refresh(sender, e);
                         break;
 					case 1:
 						if (musicList.Songs.Count == 0 && MessageBox.Show("Your Music List is currently empty.\nAre you sure you want to continue?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
 							break;
-						hackerList = HackerList.ParseCSV(file, musicList);
+						hackerList = HackerList.ParseCSV(fileLines, musicList);
 						lvHackerList.ItemsSource = hackerList.Entries;
                         
+						isHackerListLoaded = true;
 						HackerList_Refresh(sender, e);
+                        break;
+					case 2:
+                        if (musicList.Songs.Count == 0 && MessageBox.Show("Your Music List is currently empty.\nAre you sure you want to continue?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
+                            break;
+
+                        courseList = CourseList.ParseCSV(fileFull);
+                        lvCourseList.ItemsSource = courseList.Entries;
+
+						isCourseListLoaded = true;
+                        HackerList_Refresh(sender, e);
                         break;
 					case 5:
                         if (musicList.Songs.Count == 0 && MessageBox.Show("Your Music List is currently empty.\nAre you sure you want to continue?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
                             break;
-                        htSheet = HTSheet.ParseTXT(file);
+                        htSheet = HTSheet.ParseTXT(fileLines);
                         lvHTSheet.ItemsSource = htSheet.Entries;
 
+						isHTSheetLoaded = true;
                         HTSheet_Refresh(sender, e);
                         break;
 				}
@@ -103,6 +129,11 @@ namespace BST_SheetsEditor
 						return;
                 }
 
+				// Reset all lists
+				musicList = new MusicList();
+				hackerList = new HackerList();
+				musicList = new MusicList();
+
 				// Scan for data sheets
 				// BeatStream AnimTribe
 				{
@@ -115,8 +146,32 @@ namespace BST_SheetsEditor
 
                         lvMusicList.ItemsSource = musicList.Songs;
                         lvHackerMusicList.ItemsSource = musicList.Songs;
+                        lvCourseMusicList.ItemsSource = musicList.Songs;
 
+						isMusicListLoaded = true;
                         MusicList_Refresh(sender, e);
+                    }
+					else
+					{
+                        switch (MessageBox.Show("Selected folder does not contain musiclist.csv.\n" +
+                            "It is recommended to load it first, so songs would appear in BEAST HACKER, Course Mode and HIGH TENSTION tabs.\n" +
+                            "Would you like to locate musiclist.csv manually?.\n" +
+							"\n" +
+							"- Click Yes to open file selector.\n" +
+							"- Click No to continue without MusicList.\n" +
+							"- Click Cancel to cancel loading altogether.",
+                            "musiclist.csv not found", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning))
+						{
+							case MessageBoxResult.Yes:
+								tcSheet.SelectedIndex = 0;
+								miOpen_Click(sender, e);
+								break;
+							case MessageBoxResult.No:
+								// Do nothing.
+								break;
+							case MessageBoxResult.Cancel:
+								return;
+						}
                     }
                     // HackerList
                     if (File.Exists(dialog.FileName + Util.SheetPaths["BST2_HackerList"]))
@@ -127,14 +182,20 @@ namespace BST_SheetsEditor
 
                         lvHackerList.ItemsSource = hackerList.Entries;
 
-						HackerList_Refresh(sender, e);
+                        isHackerListLoaded = true;
+                        HackerList_Refresh(sender, e);
                     }
                     // CourseList
                     if (File.Exists(dialog.FileName + Util.SheetPaths["BST2_CourseList"]))
                     {
-                        file = File.ReadAllLines(dialog.FileName + Util.SheetPaths["BST2_CourseList"], Encoding.GetEncoding("Shift-JIS"));
+                        string _file = File.ReadAllText(dialog.FileName + Util.SheetPaths["BST2_CourseList"], Encoding.GetEncoding("Shift-JIS"));
 
-						// TODO: Parse list
+                        courseList = CourseList.ParseCSV(_file);
+
+                        lvCourseList.ItemsSource = courseList.Entries;
+
+						isCourseListLoaded = true;
+                        CourseList_Refresh(sender, e);
                     }
                     // CrisisList
                     if (File.Exists(dialog.FileName + Util.SheetPaths["BST2_CrisisList"]))
@@ -159,16 +220,26 @@ namespace BST_SheetsEditor
 
                         lvHTSheet.ItemsSource = htSheet.Entries;
 
+						isHTSheetLoaded = true;
                         HTSheet_Refresh(sender, e);
                     }
-                    // ParticleMotion
-                    if (File.Exists(dialog.FileName + Util.SheetPaths["ParticleMotion"]))
-                    {
-                        file = File.ReadAllLines(dialog.FileName + Util.SheetPaths["ParticleMotion"], Encoding.GetEncoding("Shift-JIS"));
-
-						// TODO: Parse list
-                    }
                 }
+
+				if(isMusicListLoaded ||
+					isHackerListLoaded ||
+					isCourseListLoaded ||
+					isHTSheetLoaded) packagePath = dialog.FileName;
+
+				MessageBox.Show("Loaded files:\n" +
+					$"- Song List (musiclist.csv): \t\t{(isMusicListLoaded ? "LOADED" : "NOT FOUND")}\n"+
+					$"- BEAST HACKER List (hacker_list.csv): \t{(isHackerListLoaded ? "LOADED" : "NOT FOUND")}\n"+
+					$"- Course Mode List (courselist.csv): \t{(isCourseListLoaded ? "LOADED" : "NOT FOUND")}\n"+
+					//$"- BEAST CRISIS List (crysislist.csv): \t{(isMusicListLoaded ? "LOADED" : "NOT FOUND")}\n"+
+					//$"- Character List (chara_list.csv): \t\t{(isMusicListLoaded ? "LOADED" : "NOT FOUND")}\n"+
+					$"- BEAST CRISIS List (crysislist.csv): \tNOT SUPPORTED\n"+
+					$"- Character List (chara_list.csv): \t\tNOT SUPPORTED\n"+
+					$"- HIGH TENSION Sheet (ht_sheat.txt): \t{(isHTSheetLoaded ? "LOADED" : "NOT FOUND")}\n",
+					"Complete", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 		}
 
@@ -185,15 +256,19 @@ namespace BST_SheetsEditor
 			{
 				switch(tcSheet.SelectedIndex)
 				{
-					//Music List
+					// Music List
 					case 0:
 						File.WriteAllLines(dialog.FileName, MusicList.CreateCSV(musicList), Encoding.GetEncoding("UTF-16"));
 						break;
-					//Hacker List
+					// Hacker List
 					case 1:
 						File.WriteAllLines(dialog.FileName, HackerList.CreateCSV(hackerList), Encoding.GetEncoding("Shift-JIS"));
 						break;
-					//HIGH TENSION Sheet
+					// Course List
+					case 2:
+						File.WriteAllText(dialog.FileName, CourseList.CreateCSV(courseList), Encoding.GetEncoding("Shift-JIS"));
+						break;
+					// HIGH TENSION Sheet
 					case 5:
 						File.WriteAllLines(dialog.FileName, HTSheet.CreateTXT(htSheet), Encoding.GetEncoding("Shift-JIS"));
 						break;
@@ -203,7 +278,12 @@ namespace BST_SheetsEditor
 			MessageBox.Show("Sheet have been saved to\n" + dialog.FileName, "All good!", MessageBoxButton.OK, MessageBoxImage.Information);
 		}
 
-		private void bQuotationBracketCopy_Click(object sender, RoutedEventArgs e)
+        private void miSaveAll_Click(object sender, RoutedEventArgs e)
+		{
+			new SavePack(packagePath, musicList, hackerList, courseList, htSheet).ShowDialog();
+		}
+
+        private void bQuotationBracketCopy_Click(object sender, RoutedEventArgs e)
 		{
 			Clipboard.SetText("\u300C\u300D");
 		}
@@ -335,7 +415,7 @@ namespace BST_SheetsEditor
 				HackerLevel = 1,
 			};
 
-			if (lvMusicList.SelectedIndex > -1)
+			if (lvHackerList.SelectedIndex > -1)
 				hackerList.Entries.Insert(lvHackerList.SelectedIndex + 1, newChain);
 			else
                 hackerList.Entries.Add(newChain);
@@ -349,6 +429,58 @@ namespace BST_SheetsEditor
 			{
 				hackerList.Entries.Clear();
 				HackerList_Refresh(sender, e);
+			}
+		}
+
+		private void CourseList_Refresh(object sender, RoutedEventArgs e)
+		{
+			lvCourseList.ItemsSource = null;
+			lvCourseList.ItemsSource = courseList.Entries;
+		}
+
+		private void bRemoveEntry_CourseList_Click(object sender, RoutedEventArgs e)
+		{
+			if(lvCourseList.SelectedIndex > -1)
+			{
+				courseList.Entries.RemoveAt(lvCourseList.SelectedIndex);
+                CourseList_Refresh(sender, e);
+			}
+		}
+
+		private void bAddEntry_CourseList_Click(object sender, RoutedEventArgs e)
+		{
+			CourseList.Entry newCourse = new CourseList.Entry()
+			{
+                Title = "New Course!",
+                UpdateID = 4,
+				Song1_ID = 0,
+				Song2_ID = 0,
+				Song3_ID = 0,
+				Song4_ID = 0,
+				Song1_Difficulty = "L",
+				Song2_Difficulty = "L",
+				Song3_Difficulty = "L",
+				Song4_Difficulty = "L",
+				BigIconName = "rank_01_big",
+				SmallIconName = "rank_01",
+				Type = "RANK",
+				Reward = 1
+			};
+
+			if (lvCourseList.SelectedIndex > -1)
+				courseList.Entries.Insert(lvCourseList.SelectedIndex + 1, newCourse);
+			else
+                courseList.Entries.Add(newCourse);
+
+            CourseList_Refresh(sender, e);
+		}
+
+		private void bClear_CourseList_Click(object sender, RoutedEventArgs e)
+		{
+			if (MessageBox.Show("Are you sure you want to delete all entries from the Course List?\nThis action is irreversible!", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+			{
+				courseList.Entries.Clear();
+				CourseList_Refresh(sender, e);
 			}
 		}
 
@@ -430,28 +562,27 @@ namespace BST_SheetsEditor
 			switch(tcSheet.SelectedIndex)
 			{
 				case 1:
-					MusicList.Music selectedSong = (MusicList.Music)lvHackerMusicList.SelectedItem;
-					HackerList.Chain selectedChain = (HackerList.Chain)lvHackerList.SelectedItem;
+					MusicList.Music selectedHackerSong = (MusicList.Music)lvHackerMusicList.SelectedItem;
 					switch (((Button)sender).Name)
 					{
 						case "btHackerUnlockedSong":
-							tbHackerUnlockedSong.Value = selectedSong.ID;
-							((HackerList.Chain)lvHackerList.SelectedItem).DisplayedUnlockedSong = musicList.GetTitleArtist(selectedSong.ID);
+							tbHackerUnlockedSong.Value = selectedHackerSong.ID;
+							((HackerList.Chain)lvHackerList.SelectedItem).DisplayedUnlockedSong = musicList.GetTitleArtist(selectedHackerSong.ID);
 							break;
 						case "btHackerLock1":
-							tbHackerLock1.Value = selectedSong.ID;
+							tbHackerLock1.Value = selectedHackerSong.ID;
 							break;
 						case "btHackerLock2":
-							tbHackerLock2.Value = selectedSong.ID;
+							tbHackerLock2.Value = selectedHackerSong.ID;
 							break;
                         case "btHackerLock3":
-							tbHackerLock3.Value = selectedSong.ID;
+							tbHackerLock3.Value = selectedHackerSong.ID;
 							break;
                         case "btHackerLock4":
-							tbHackerLock4.Value = selectedSong.ID;
+							tbHackerLock4.Value = selectedHackerSong.ID;
 							break;
                         case "btHackerLock5":
-							tbHackerLock5.Value = selectedSong.ID;
+							tbHackerLock5.Value = selectedHackerSong.ID;
 							break;
 						case "btHackerLock1Clear":
 							tbHackerLock1.Value = -1;
@@ -485,19 +616,51 @@ namespace BST_SheetsEditor
 							break;
                     }
                     break;
-			}
-		}
+				case 2:
+                    MusicList.Music selectedCourseSong = (MusicList.Music)lvCourseMusicList.SelectedItem;
+                    switch (((Button)sender).Name)
+                    {
+                        case "btCourseSong1":
+                            tbCourseSong1.Value = selectedCourseSong.ID;
+                            break;
+                        case "btCourseSong2":
+                            tbCourseSong2.Value = selectedCourseSong.ID;
+                            break;
+                        case "btCourseSong3":
+                            tbCourseSong3.Value = selectedCourseSong.ID;
+                            break;
+                        case "btCourseSong4":
+                            tbCourseSong4.Value = selectedCourseSong.ID;
+                            break;
+                    }
+                    break;
+            }
 
-		private void HackerChangeSelectedSong(object sender, RoutedPropertyChangedEventArgs<object> e)
+			UpdateAssignedSongs(sender, null);
+        }
+
+		private void ChangeAssignedSong(object sender, RoutedPropertyChangedEventArgs<object> e)
 		{
 			Xceed.Wpf.Toolkit.IntegerUpDown spin = (Xceed.Wpf.Toolkit.IntegerUpDown)sender;
 
-			if (spin.Value != null)
-					lvHackerMusicList.SelectedIndex = (int)spin.Value;
+			switch(tcSheet.SelectedIndex)
+			{
+				case 1:
+                    if (spin.Value != null)
+                        lvHackerMusicList.SelectedIndex = (int)spin.Value;
 
-			lvHackerMusicList.ScrollIntoView(lvHackerMusicList.SelectedItem);
-			
-			return;
+                    lvHackerMusicList.ScrollIntoView(lvHackerMusicList.SelectedItem);
+                    break;
+				case 2:
+                    if (spin.Value != null)
+                        lvCourseMusicList.SelectedIndex = (int)spin.Value;
+
+                    lvCourseMusicList.ScrollIntoView(lvCourseMusicList.SelectedItem);
+                    break;
+			}
+
+            UpdateAssignedSongs(sender, null);
+            return;
 		}
 
         private void bAppendFromClipboard_MusicList_Click(object sender, RoutedEventArgs e)
@@ -547,6 +710,217 @@ namespace BST_SheetsEditor
 			else
 			{
 				MessageBox.Show("Clipboard does not contain HTSheet entry data.", "Error parsing data.", MessageBoxButton.OK, MessageBoxImage.Warning);
+			}
+        }
+
+        private void UpdateAssignedSongs(object sender, SelectionChangedEventArgs e)
+        {
+			switch(tcSheet.SelectedIndex)
+			{
+				// HackerList
+				case 1:
+                    if (lvHackerList.SelectedItem == null) return;
+
+                    HackerList.Chain chain = (HackerList.Chain)lvHackerList.SelectedItem;
+
+					// there probably a better way to handle this, but whatever
+					// Lock 1
+					try
+                    {
+						if(chain.Lock1_SongID == -1)
+						{
+                            lHackerLock1Name.Content = "-";
+                        }
+						else
+						{
+                            string diff = Util.GetFullDiffName(chain.Lock1_SongDifficulty) switch
+                            {
+                                "LIGHT" => musicList.Songs[chain.Lock1_SongID].DisplayedDifficultyLight,
+                                "MEDIUM" => musicList.Songs[chain.Lock1_SongID].DisplayedDifficultyMedium,
+                                "BEAST" => musicList.Songs[chain.Lock1_SongID].DisplayedDifficultyBeast,
+                                "NIGHTMARE" => musicList.Songs[chain.Lock1_SongID].DisplayedDifficultyNightmare,
+                                _ => ""
+                            };
+                            lHackerLock1Name.Content = $"{musicList.GetTitleArtist(chain.Lock1_SongID)} [{Util.GetFullDiffName(chain.Lock1_SongDifficulty)} {diff}]";
+                        }
+                    }
+                    catch
+					{
+						lHackerLock1Name.Content = "[INVALID SONG]";
+                    }
+					// Lock 2
+					try
+					{
+						if (chain.Lock2_SongID == -1)
+						{
+							lHackerLock2Name.Content = "-";
+						}
+						else
+						{
+							string diff = Util.GetFullDiffName(chain.Lock1_SongDifficulty) switch
+							{
+								"LIGHT" => musicList.Songs[chain.Lock2_SongID].DisplayedDifficultyLight,
+								"MEDIUM" => musicList.Songs[chain.Lock2_SongID].DisplayedDifficultyMedium,
+								"BEAST" => musicList.Songs[chain.Lock2_SongID].DisplayedDifficultyBeast,
+								"NIGHTMARE" => musicList.Songs[chain.Lock2_SongID].DisplayedDifficultyNightmare,
+								_ => ""
+							};
+							lHackerLock2Name.Content = $"{musicList.GetTitleArtist(chain.Lock2_SongID)} [{Util.GetFullDiffName(chain.Lock2_SongDifficulty)} {diff}]";
+						}
+					}
+					catch
+					{
+						lHackerLock2Name.Content = "[INVALID SONG]";
+					}
+					// Lock 3
+					try
+					{
+						if (chain.Lock3_SongID == -1)
+						{
+							lHackerLock3Name.Content = "-";
+						}
+						else
+						{
+							string diff = Util.GetFullDiffName(chain.Lock1_SongDifficulty) switch
+							{
+								"LIGHT" => musicList.Songs[chain.Lock3_SongID].DisplayedDifficultyLight,
+								"MEDIUM" => musicList.Songs[chain.Lock3_SongID].DisplayedDifficultyMedium,
+								"BEAST" => musicList.Songs[chain.Lock3_SongID].DisplayedDifficultyBeast,
+								"NIGHTMARE" => musicList.Songs[chain.Lock3_SongID].DisplayedDifficultyNightmare,
+								_ => ""
+							};
+							lHackerLock3Name.Content = $"{musicList.GetTitleArtist(chain.Lock3_SongID)} [{Util.GetFullDiffName(chain.Lock3_SongDifficulty)} {diff}]";
+						}
+					}
+					catch
+					{
+						lHackerLock3Name.Content = "[INVALID SONG]";
+					}
+					// Lock 4
+					try
+					{
+						if (chain.Lock4_SongID == -1)
+						{
+							lHackerLock4Name.Content = "-";
+						}
+						else
+						{
+							string diff = Util.GetFullDiffName(chain.Lock1_SongDifficulty) switch
+							{
+								"LIGHT" => musicList.Songs[chain.Lock4_SongID].DisplayedDifficultyLight,
+								"MEDIUM" => musicList.Songs[chain.Lock4_SongID].DisplayedDifficultyMedium,
+								"BEAST" => musicList.Songs[chain.Lock4_SongID].DisplayedDifficultyBeast,
+								"NIGHTMARE" => musicList.Songs[chain.Lock4_SongID].DisplayedDifficultyNightmare,
+								_ => ""
+							};
+							lHackerLock4Name.Content = $"{musicList.GetTitleArtist(chain.Lock4_SongID)} [{Util.GetFullDiffName(chain.Lock4_SongDifficulty)} {diff}]";
+						}
+					}
+					catch
+					{
+						lHackerLock4Name.Content = "[INVALID SONG]";
+					}
+					// Lock 5
+					try
+					{
+						if (chain.Lock5_SongID == -1)
+						{
+							lHackerLock5Name.Content = "-";
+						}
+						else
+						{
+							string diff = Util.GetFullDiffName(chain.Lock1_SongDifficulty) switch
+							{
+								"LIGHT" => musicList.Songs[chain.Lock5_SongID].DisplayedDifficultyLight,
+								"MEDIUM" => musicList.Songs[chain.Lock5_SongID].DisplayedDifficultyMedium,
+								"BEAST" => musicList.Songs[chain.Lock5_SongID].DisplayedDifficultyBeast,
+								"NIGHTMARE" => musicList.Songs[chain.Lock5_SongID].DisplayedDifficultyNightmare,
+								_ => ""
+							};
+							lHackerLock5Name.Content = $"{musicList.GetTitleArtist(chain.Lock5_SongID)} [{Util.GetFullDiffName(chain.Lock5_SongDifficulty)} {diff}]";
+						}
+					}
+					catch
+					{
+						lHackerLock5Name.Content = "[INVALID SONG]";
+					}
+                    break;
+				// CourseList
+				case 2:
+					if (lvCourseList.SelectedItem == null) return;
+
+					CourseList.Entry course = (CourseList.Entry)lvCourseList.SelectedItem;
+
+					// again, there probably a better way to handle this, but whatever
+					// Song 1
+					try
+                    {
+                        string diff = Util.GetFullDiffName(course.Song1_Difficulty) switch
+                        {
+                            "LIGHT" => musicList.Songs[course.Song1_ID].DisplayedDifficultyLight,
+                            "MEDIUM" => musicList.Songs[course.Song1_ID].DisplayedDifficultyMedium,
+                            "BEAST" => musicList.Songs[course.Song1_ID].DisplayedDifficultyBeast,
+                            "NIGHTMARE" => musicList.Songs[course.Song1_ID].DisplayedDifficultyNightmare,
+                            _ => ""
+                        };
+                        lCourseSong1Name.Content = $"{musicList.GetTitleArtist(course.Song1_ID)} [{Util.GetFullDiffName(course.Song1_Difficulty)} {diff}]";
+                    }
+                    catch
+					{
+                        lCourseSong1Name.Content = "[INVALID SONG]";
+                    }
+                    // Song 2
+                    try
+                    {
+                        string diff = Util.GetFullDiffName(course.Song2_Difficulty) switch
+                        {
+                            "LIGHT" => musicList.Songs[course.Song2_ID].DisplayedDifficultyLight,
+                            "MEDIUM" => musicList.Songs[course.Song2_ID].DisplayedDifficultyMedium,
+                            "BEAST" => musicList.Songs[course.Song2_ID].DisplayedDifficultyBeast,
+                            "NIGHTMARE" => musicList.Songs[course.Song2_ID].DisplayedDifficultyNightmare,
+                            _ => ""
+                        };
+                        lCourseSong2Name.Content = $"{musicList.GetTitleArtist(course.Song2_ID)} [{Util.GetFullDiffName(course.Song2_Difficulty)} {diff}]";
+                    }
+                    catch
+					{
+                        lCourseSong2Name.Content = "[INVALID SONG]";
+                    }
+                    // Song 3
+                    try
+                    {
+                        string diff = Util.GetFullDiffName(course.Song3_Difficulty) switch
+                        {
+                            "LIGHT" => musicList.Songs[course.Song3_ID].DisplayedDifficultyLight,
+                            "MEDIUM" => musicList.Songs[course.Song3_ID].DisplayedDifficultyMedium,
+                            "BEAST" => musicList.Songs[course.Song3_ID].DisplayedDifficultyBeast,
+                            "NIGHTMARE" => musicList.Songs[course.Song3_ID].DisplayedDifficultyNightmare,
+                            _ => ""
+                        };
+                        lCourseSong3Name.Content = $"{musicList.GetTitleArtist(course.Song3_ID)} [{Util.GetFullDiffName(course.Song3_Difficulty)} {diff}]";
+                    }
+                    catch
+					{
+                        lCourseSong3Name.Content = "[INVALID SONG]";
+                    }
+                    // Song 4
+                    try
+                    {
+						string diff = Util.GetFullDiffName(course.Song4_Difficulty) switch
+                        {
+							"LIGHT" => musicList.Songs[course.Song4_ID].DisplayedDifficultyLight,
+							"MEDIUM" => musicList.Songs[course.Song4_ID].DisplayedDifficultyMedium,
+							"BEAST" => musicList.Songs[course.Song4_ID].DisplayedDifficultyBeast,
+							"NIGHTMARE" => musicList.Songs[course.Song4_ID].DisplayedDifficultyNightmare,
+                            _ => ""
+						};
+                        lCourseSong4Name.Content = $"{musicList.GetTitleArtist(course.Song4_ID)} [{Util.GetFullDiffName(course.Song4_Difficulty)} {diff}]";
+                    }
+                    catch
+					{
+                        lCourseSong4Name.Content = "[INVALID SONG]";
+                    }
+                    break;
 			}
         }
     }

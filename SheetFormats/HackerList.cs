@@ -5,14 +5,15 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Shapes;
 using static BST_SheetsEditor.HackerList;
 using static BST_SheetsEditor.MusicList;
 
 namespace BST_SheetsEditor
 {
-	class HackerList
+    public class HackerList
 	{
-		public ObservableCollection<Chain> Entries = new ObservableCollection<Chain>();
+		public ObservableCollection<Chain> Entries { get; set; } = new ObservableCollection<Chain>();
 
 		public void UpdateDisplayedHeaders(MusicList musicList)
 		{
@@ -26,10 +27,12 @@ namespace BST_SheetsEditor
 
 			for (int i = 0; i < data.Length; i++)
 			{
-				//Line is a comment, skip parsing
+				// Line is a comment, skip parsing
 				if (data[i].StartsWith("//")) continue;
-				//Line ends the sheet, stop parsing
-				if (data[i] == "EOF") break;
+				// Line is empty, skip parsing to avoid problems
+                if (string.IsNullOrEmpty(data[i])) continue;
+                // Line ends the sheet, stop parsing
+                if (data[i] == "EOF") break;
 
 				string[] entryData = data[i].Split('\uFF5C');
 

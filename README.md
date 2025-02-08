@@ -15,12 +15,7 @@ While technically those are human-readable text files, they almost never provide
 | BEAST CRISIS List | `data2/others/crysislist.csv` | BEAST CRISIS unlock system definitions. |
 | Character List | `data2/others/chara_list.csv` | Aibou (character) definitions. |
 | HIGH TENSION Sheet | `data2/sound/ht_sheat.txt` | HIGH TENSION TIME definitions. |
-| Particle Motion File | `data2/particle/motionfile/*.pm` | HIGH TENSION TIME particle motion definitions. |
-| Standard Stream File / Stream Prefab | `data/stream/stream_*.str` | Standard Stream path definitions. |
 
 > [!NOTE]
 > `.` in the beginning of path can be replaced by either `data` or `data2`.
 > The actual formats are different between BST1 and BST2 though
-
-> [!NOTE]
-> `*` is just a wildcard for "anything"

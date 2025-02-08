@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace BST_SheetsEditor
 {
-	internal class MusicList
+	public class MusicList
 	{
-		public ObservableCollection<Music> Songs = new ObservableCollection<Music>();
+		public ObservableCollection<Music> Songs { get; set; } = new ObservableCollection<Music>();
 
 		public string GetTitleArtist(int id)
 		{
@@ -26,10 +26,11 @@ namespace BST_SheetsEditor
 
 			foreach(string entry in data)
 			{
-                //Line is a comment, skip parsing
-                if (entry.StartsWith("//")) continue;
-
-                //Line ends the sheet, stop parsing
+                // Line is a header, skip parsing
+                if (entry.StartsWith("// MusicInfoData")) continue;
+                // Line is empty, skip parsing to avoid problems
+                if (string.IsNullOrEmpty(entry)) continue;
+                // Line ends the sheet, stop parsing
                 if (entry == "EOF") break;
 
                 Music song = Music.ParseData(entry);
