@@ -254,28 +254,35 @@ namespace BST_SheetsEditor
 
             if ((bool)dialog.ShowDialog())
 			{
-				switch(tcSheet.SelectedIndex)
+				try
 				{
-					// Music List
-					case 0:
-						File.WriteAllLines(dialog.FileName, MusicList.CreateCSV(musicList), Encoding.GetEncoding("UTF-16"));
-						break;
-					// Hacker List
-					case 1:
-						File.WriteAllLines(dialog.FileName, HackerList.CreateCSV(hackerList), Encoding.GetEncoding("Shift-JIS"));
-						break;
-					// Course List
-					case 2:
-						File.WriteAllText(dialog.FileName, CourseList.CreateCSV(courseList), Encoding.GetEncoding("Shift-JIS"));
-						break;
-					// HIGH TENSION Sheet
-					case 5:
-						File.WriteAllLines(dialog.FileName, HTSheet.CreateTXT(htSheet), Encoding.GetEncoding("Shift-JIS"));
-						break;
+                    switch (tcSheet.SelectedIndex)
+                    {
+                        // Music List
+                        case 0:
+                            File.WriteAllLines(dialog.FileName, MusicList.CreateCSV(musicList), Encoding.GetEncoding("UTF-16"));
+                            break;
+                        // Hacker List
+                        case 1:
+                            File.WriteAllLines(dialog.FileName, HackerList.CreateCSV(hackerList), Encoding.GetEncoding("Shift-JIS"));
+                            break;
+                        // Course List
+                        case 2:
+                            File.WriteAllText(dialog.FileName, CourseList.CreateCSV(courseList), Encoding.GetEncoding("Shift-JIS"));
+                            break;
+                        // HIGH TENSION Sheet
+                        case 5:
+                            File.WriteAllLines(dialog.FileName, HTSheet.CreateTXT(htSheet), Encoding.GetEncoding("Shift-JIS"));
+                            break;
+                    }
+
+                    MessageBox.Show("Sheet have been saved to\n" + dialog.FileName, "All good!", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+				catch(Exception ex)
+				{
+					MessageBox.Show($"Error saving file:\n\n{ex}", "Something went wrong", MessageBoxButton.OK, MessageBoxImage.Error);
 				}
 			}
-
-			MessageBox.Show("Sheet have been saved to\n" + dialog.FileName, "All good!", MessageBoxButton.OK, MessageBoxImage.Information);
 		}
 
         private void miSaveAll_Click(object sender, RoutedEventArgs e)

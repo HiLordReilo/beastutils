@@ -25,6 +25,7 @@ namespace BST_SheetsEditor
         CourseList _courseList;
         HTSheet _htSheet;
 
+        enum SaveState { SKIP, SUCCESS, FAIL }
 
         public SavePack(string initialPath, MusicList musicList, HackerList hackerList, CourseList courseList, HTSheet htSheet)
         {
@@ -63,7 +64,7 @@ namespace BST_SheetsEditor
                 return;
             }
 
-            if(!tbSavePath.Text.Contains("data_mods"))
+            if (!tbSavePath.Text.Contains("data_mods"))
             {
                 if (MessageBox.Show("Selected folder is not considered to be a mod.\n" +
                     "It is generally not recommended to modify game files directly.\n" +
@@ -74,12 +75,78 @@ namespace BST_SheetsEditor
 
             Directory.CreateDirectory(tbSavePath.Text + "/data2/sound/");
             Directory.CreateDirectory(tbSavePath.Text + "/data2/others/");
-            if (cbMusicList.IsChecked == true) File.WriteAllLines(tbSavePath.Text + Util.SheetPaths["BST2_MusicList"], MusicList.CreateCSV(_musicList), Encoding.GetEncoding("UTF-16"));
-            if (cbHackerList.IsChecked == true) File.WriteAllLines(tbSavePath.Text + Util.SheetPaths["BST2_HackerList"], HackerList.CreateCSV(_hackerList), Encoding.GetEncoding("Shift-JIS"));
-            if (cbCourseList.IsChecked == true) File.WriteAllText(tbSavePath.Text + Util.SheetPaths["BST2_CourseList"], CourseList.CreateCSV(_courseList), Encoding.GetEncoding("Shift-JIS"));
-            if (cbHTSheet.IsChecked == true) File.WriteAllLines(tbSavePath.Text + Util.SheetPaths["BST2_HTSheet"], HTSheet.CreateTXT(_htSheet), Encoding.GetEncoding("Shift-JIS"));
 
-            MessageBox.Show("Package have been saved to\n" + tbSavePath.Text, "All good!", MessageBoxButton.OK, MessageBoxImage.Information);
+            // Save states.
+            // 0 = Skipped
+            // 1 = Saved
+            // 255 = Failed
+            SaveState ssML = SaveState.SKIP;
+            SaveState ssHL = SaveState.SKIP;
+            SaveState ssCoL = SaveState.SKIP;
+            SaveState ssCrL = SaveState.SKIP;
+            SaveState ssChL = SaveState.SKIP;
+            SaveState ssHTS = SaveState.SKIP;
+            bool anyFail = false;
+
+            // MusicList
+            if (cbMusicList.IsChecked == true)
+                try
+                {
+                    File.WriteAllLines(tbSavePath.Text + Util.SheetPaths["BST2_MusicList"], MusicList.CreateCSV(_musicList), Encoding.GetEncoding("UTF-16"));
+                    ssML = SaveState.SUCCESS;
+                }
+                catch
+                {
+                    ssML = SaveState.FAIL;
+                    anyFail = true;
+                }
+            // HackerList
+            if (cbHackerList.IsChecked == true)
+                try
+                {
+                    File.WriteAllLines(tbSavePath.Text + Util.SheetPaths["BST2_HackerList"], HackerList.CreateCSV(_hackerList), Encoding.GetEncoding("Shift-JIS"));
+                    ssHL = SaveState.SUCCESS;
+                }
+                catch
+                {
+                    ssHL = SaveState.FAIL;
+                    anyFail = true;
+                }
+            // CourseList
+            if (cbCourseList.IsChecked == true)
+                try
+                {
+                    File.WriteAllText(tbSavePath.Text + Util.SheetPaths["BST2_CourseList"], CourseList.CreateCSV(_courseList), Encoding.GetEncoding("Shift-JIS"));
+                    ssCoL = SaveState.SUCCESS;
+                }
+                catch
+                {
+                    ssCoL = SaveState.FAIL;
+                    anyFail = true;
+                }
+            // HIGH-TENSION Sheet
+            if (cbHTSheet.IsChecked == true)
+                try
+                {
+                    File.WriteAllLines(tbSavePath.Text + Util.SheetPaths["BST2_HTSheet"], HTSheet.CreateTXT(_htSheet), Encoding.GetEncoding("Shift-JIS"));
+                    ssHTS = SaveState.SUCCESS;
+                }
+                catch
+                {
+                    ssHTS = SaveState.FAIL;
+                    anyFail = true;
+                }
+
+            MessageBox.Show("Package have been saved to\n" + tbSavePath.Text + "\n\n" +
+                $"- Song List (musiclist.csv): \t\t{ssML}\n" +
+                $"- BEAST HACKER List (hacker_list.csv): \t{ssHL}\n" +
+                $"- Course Mode List (courselist.csv): \t{ssCoL}\n" +
+                $"- BEAST CRISIS List (crysislist.csv): \t{ssCrL}\n" +
+                $"- Character List (chara_list.csv): \t\t{ssChL}\n" +
+                $"- HIGH TENSION Sheet (ht_sheat.txt): \t{ssHTS}" + (anyFail ? "\n\nIt appears some files failed to save. Make sure they are not used by other programs while saving." : ""),
+                "Complete.",
+                MessageBoxButton.OK,
+                anyFail ? MessageBoxImage.Warning : MessageBoxImage.Information);
 
             Close();
         }
