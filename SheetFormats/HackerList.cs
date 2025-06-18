@@ -32,7 +32,8 @@ namespace BST_SheetsEditor
 				// Line is empty, skip parsing to avoid problems
                 if (string.IsNullOrEmpty(data[i])) continue;
                 // Line ends the sheet, stop parsing
-                if (data[i] == "EOF") break;
+				// Why trim? Refer to similar section in MusicList script
+                if (data[i].Trim() == "EOF") break;
 
 				string[] entryData = data[i].Split('\uFF5C');
 

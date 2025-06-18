@@ -31,7 +31,12 @@ namespace BST_SheetsEditor
                 // Line is empty, skip parsing to avoid problems
                 if (string.IsNullOrEmpty(entry)) continue;
                 // Line ends the sheet, stop parsing
-                if (entry == "EOF") break;
+                // We have to trim off whitespaces/linebreaks or the program will just die.
+                // Funny thing! If you look into CreateCSV() function down there, we end the list with EOF line.
+                // However, for whoever knows what reason, after saving all lines to the file, there's always a trailing linebreak!
+                // This makes it impossible for BeStISE to read back the file it produced if we don't trim the EOL!
+                // I have NO clue how I didn't stumble upon it while testing until it became a problem.
+                if (entry.Trim() == "EOF") break;
 
                 Music song = Music.ParseData(entry);
 
@@ -50,7 +55,7 @@ namespace BST_SheetsEditor
 
 			foreach (Music song in musicList.Songs)
             {
-                result.Add(
+                result.Add((
                     $"{song.ID}\uFF5C" +
                     $"{song.Title}\uFF5C" +
                     $"{song.SortTitle}\uFF5C" +
@@ -80,7 +85,9 @@ namespace BST_SheetsEditor
                     $"{song.MovieRegion}\uFF5C" +
                     $"{song.MovieReplacement}\uFF5C" +
                     $"{song.Series}\uFF5C" +
-                    $"{song.AnimeSubtitle}"
+                    $"{song.AnimeSubtitle}").TrimEnd()  // <- Without Trimming, the list will just have extra linebreaks in-between entries.
+                                                        //    The game still accepts the resulting files, but those linebreaks are just unnecessary bloat.
+                                                        //    Does CRLF thing have to do anything with this? Or is it just dotnet/C# being quirky?
                 );
             }
 

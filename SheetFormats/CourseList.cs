@@ -252,7 +252,8 @@ namespace BST_SheetsEditor
                 // Line is empty, skip parsing to avoid problems
                 if (string.IsNullOrEmpty(dataSeg)) continue;
                 // Line ends the sheet, stop parsing
-                if (dataSeg.StartsWith("EOF")) break;
+                // Why trim? Refer to similar section in MusicList script
+                if (dataSeg.Trim() == "EOF") break;
 
                 builtEntry.Add(dataSeg);
 
