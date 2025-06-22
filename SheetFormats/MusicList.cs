@@ -29,7 +29,9 @@ namespace BST_SheetsEditor
                 // Line is a header, skip parsing
                 if (entry.StartsWith("// MusicInfoData")) continue;
                 // Line is empty, skip parsing to avoid problems
-                if (string.IsNullOrEmpty(entry)) continue;
+                // We also have to trim it.... why IsNullOrEmpty() doesn't work with linebreaks? Is this related to CRLF crap?
+                // thanks michaelsoft
+                if (string.IsNullOrEmpty(entry.Trim())) continue;
                 // Line ends the sheet, stop parsing
                 // We have to trim off whitespaces/linebreaks or the program will just die.
                 // Funny thing! If you look into CreateCSV() function down there, we end the list with EOF line.
