@@ -373,7 +373,7 @@
                                 </Grid>
                             </StackPanel>
                         </TabItem>
-                        <TabItem Header="Uncommon Properties">
+                        <TabItem Header="Other Properties">
                             <StackPanel>
                                 <!--Unknown1-->
                                 <Grid>
@@ -569,7 +569,7 @@
 
                     <!--Metadata panel-->
                     <TabControl Grid.Column="1" Grid.Row="0" Grid.RowSpan="3">
-                        <TabItem Header="Properties">
+                        <TabItem Header="Common Properties">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="auto"/>
@@ -586,16 +586,6 @@
 
                                         <Label Content="Chain ID: " HorizontalAlignment="Right" Grid.Column="0"/>
                                         <xctk:IntegerUpDown Value="{Binding Path=SelectedItem.ID, ElementName=lvHackerList}" Margin="2" Grid.Column="1"/>
-                                    </Grid>
-                                    <!--Update ID-->
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="1*"/>
-                                            <ColumnDefinition Width="2*"/>
-                                        </Grid.ColumnDefinitions>
-
-                                        <Label Content="Update ID&#8317;&#42781;&#8318;: " HorizontalAlignment="Right" Grid.Column="0" ToolTip="Must be 1-10 for it to appear in the game!"/>
-                                        <xctk:IntegerUpDown Value="{Binding Path=SelectedItem.Update, ElementName=lvHackerList}" Margin="2" Grid.Column="1"/>
                                     </Grid>
                                     <!--Hacker Level-->
                                     <Grid>
@@ -772,6 +762,20 @@
                                 </ListView>
                             </Grid>
                         </TabItem>
+                        <TabItem Header="Other Properties">
+                            <StackPanel>
+                                <!--Update ID-->
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="2*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label Content="Update ID&#8317;&#42781;&#8318;: " HorizontalAlignment="Right" Grid.Column="0" ToolTip="Must be 1-10 for it to appear in the game!"/>
+                                    <xctk:IntegerUpDown Value="{Binding Path=SelectedItem.Update, ElementName=lvHackerList}" Margin="2" Grid.Column="1"/>
+                                </Grid>
+                            </StackPanel>
+                        </TabItem>
                     </TabControl>
                 </Grid>
             </TabItem>
@@ -812,7 +816,7 @@
 
                     <!--Metadata panel-->
                     <TabControl Grid.Column="1" Grid.Row="0" Grid.RowSpan="3">
-                        <TabItem Header="Properties">
+                        <TabItem Header="Common Properties">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="auto"/>
@@ -829,16 +833,6 @@
 
                                         <Label Content="Title: " HorizontalAlignment="Right" Grid.Column="0"/>
                                         <TextBox Text="{Binding Path=SelectedItem.Title, ElementName=lvCourseList}" Margin="2" Grid.Column="1"/>
-                                    </Grid>
-                                    <!--Update ID-->
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="1*"/>
-                                            <ColumnDefinition Width="2*"/>
-                                        </Grid.ColumnDefinitions>
-
-                                        <Label Content="Update ID&#8317;&#42781;&#8318;: " HorizontalAlignment="Right" Grid.Column="0" ToolTip="Must be 1-4 for it to appear in the game!"/>
-                                        <xctk:IntegerUpDown Value="{Binding Path=SelectedItem.UpdateID, ElementName=lvCourseList}" Margin="2" Grid.Column="1"/>
                                     </Grid>
                                     <!--Type and Reward-->
                                     <Grid>
@@ -972,6 +966,20 @@
                                 </ListView>
                             </Grid>
                         </TabItem>
+                        <TabItem Header="Other Properties">
+                            <StackPanel>
+                                <!--Update ID-->
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="2*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label Content="Update ID&#8317;&#42781;&#8318;: " HorizontalAlignment="Right" Grid.Column="0" ToolTip="Must be 1-4 for it to appear in the game!"/>
+                                    <xctk:IntegerUpDown Value="{Binding Path=SelectedItem.UpdateID, ElementName=lvCourseList}" Margin="2" Grid.Column="1"/>
+                                </Grid>
+                            </StackPanel>
+                        </TabItem>
                     </TabControl>
                 </Grid>
             </TabItem>
@@ -1019,7 +1027,7 @@
 
                     <!--Metadata panel-->
                     <TabControl Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
-                        <TabItem Header="Common Properties">
+                        <TabItem Header="Properties">
                             <StackPanel>
                                 <!--Song Name-->
                                 <Grid>
