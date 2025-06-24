@@ -987,7 +987,437 @@
                 <Label Content="To be added...." HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </TabItem>
             <TabItem Header="Character List">
-                <Label Content="To be added...." HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+
+                    <ListView x:Name="lvCharaList" Margin="3">
+                        <ListView.View>
+                            <GridView AllowsColumnReorder="False">
+                                <GridViewColumn DisplayMemberBinding="{Binding Path=Name}" Width="780">Character</GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+
+                    <!--Control panel-->
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Button Content="Add" Margin="2" Click="bAddEntry_CharaList_Click" Grid.Column="0"/>
+                        <Button Content="From clipboard" Margin="2" Click="bAppendFromClipboard_CharaList_Click" Grid.Column="1"/>
+                        <Button Content="Remove" Margin="2" Click="bRemoveEntry_CharaList_Click" Grid.Column="2"/>
+                        <Button Content="Refresh" Margin="2" Click="CharaList_Refresh" Grid.Column="3"/>
+                        <Button Content="Clear list" Margin="2" Click="bClear_CharaList_Click" Grid.Column="4"/>
+                    </Grid>
+
+                    <!--Metadata panel-->
+                    <TabControl Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
+                        <TabItem Header="Common Properties">
+                            <StackPanel>
+                                <!--Song Name-->
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="2*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label Content="Character Name: " HorizontalAlignment="Right" Grid.Column="0"/>
+                                    <TextBox x:Name="tbCharName" Text="{Binding Path=SelectedItem.Name, ElementName=lvCharaList}" Margin="2" Grid.Column="1"/>
+                                </Grid>
+                                <!--Character Description-->
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="2*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label Content="Description: " HorizontalAlignment="Right" Grid.Column="0"/>
+                                    <TextBox x:Name="tbCharDesc" Text="{Binding Path=SelectedItem.Description, ElementName=lvCharaList}" AcceptsReturn="True" Margin="2" Height="128" Grid.Column="1"/>
+                                </Grid>
+                                <!--Texture Definitions-->
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+
+                                    <Label Content="[Textures]" FontWeight="Bold" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4"/>
+    
+                                    <Label Content="Button" FontWeight="Bold" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="1"/>
+                                    <TextBox x:Name="tbCharTexButton" Text="{Binding Path=SelectedItem.ButtonTexture, ElementName=lvCharaList}" Margin="2" Grid.Column="0" Grid.Row="2"/>
+    
+                                    <Label Content="Plate" FontWeight="Bold" HorizontalAlignment="Center" Grid.Column="1" Grid.Row="1"/>
+                                    <TextBox x:Name="tbCharTexPlate" Text="{Binding Path=SelectedItem.PlateIconTexture, ElementName=lvCharaList}" Margin="2" Grid.Column="1" Grid.Row="2"/>
+    
+                                    <Label Content="Main" FontWeight="Bold" HorizontalAlignment="Center" Grid.Column="2" Grid.Row="1"/>
+                                    <TextBox x:Name="tbCharTexMain" Text="{Binding Path=SelectedItem.MainTexture, ElementName=lvCharaList}" Margin="2" Grid.Column="2" Grid.Row="2"/>
+    
+                                    <Label Content="Face" FontWeight="Bold" HorizontalAlignment="Center" Grid.Column="3" Grid.Row="1"/>
+                                    <TextBox x:Name="tbCharTexFace" Text="{Binding Path=SelectedItem.DefaultFaceTexture, ElementName=lvCharaList}" Margin="2" Grid.Column="3" Grid.Row="2"/>
+                                </Grid>
+
+                                <Separator Margin="10"/>
+
+                                <!--Data-->
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="4*"/>
+                                        <ColumnDefinition Width="0.5*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label Content="Face" HorizontalAlignment="Center" Grid.Column="0" TextBlock.FontWeight="Bold"/>
+                                    <Label Content="Response" HorizontalAlignment="Center" Grid.Column="1" TextBlock.FontWeight="Bold"/>
+                                </Grid>
+                                <ScrollViewer Grid.Row="1" Grid.ColumnSpan="4" MaxHeight="300">
+                                    <StackPanel>
+                                        <!--Poke-->
+                                        <Label Content="[Poke]" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="4*"/>
+                                                <ColumnDefinition Width="0.5*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBox Text="{Binding Path=SelectedItem.FacePoke1, ElementName=lvCharaList}" Margin="2" Grid.Column="0"/>
+                                            <TextBox Text="{Binding Path=SelectedItem.ResponsePoke1, ElementName=lvCharaList}" AcceptsReturn="True" Margin="2" Height="64" Grid.Column="1"/>
+                                            <Button Name="btClearCharaP1" Content="X" Margin="2" Grid.Column="2" Click="ClearCharacterResponse"/>
+                                        </Grid>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="4*"/>
+                                                <ColumnDefinition Width="0.5*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBox Text="{Binding Path=SelectedItem.FacePoke2, ElementName=lvCharaList}" Margin="2" Grid.Column="0"/>
+                                            <TextBox Text="{Binding Path=SelectedItem.ResponsePoke2, ElementName=lvCharaList}" AcceptsReturn="True" Margin="2" Height="64" Grid.Column="1"/>
+                                            <Button Name="btClearCharaP2" Content="X" Margin="2" Grid.Column="2" Click="ClearCharacterResponse"/>
+                                        </Grid>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="4*"/>
+                                                <ColumnDefinition Width="0.5*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBox Text="{Binding Path=SelectedItem.FacePoke3, ElementName=lvCharaList}" Margin="2" Grid.Column="0"/>
+                                            <TextBox Text="{Binding Path=SelectedItem.ResponsePoke3, ElementName=lvCharaList}" AcceptsReturn="True" Margin="2" Height="64" Grid.Column="1"/>
+                                            <Button Name="btClearCharaP3" Content="X" Margin="2" Grid.Column="2" Click="ClearCharacterResponse"/>
+                                        </Grid>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="4*"/>
+                                                <ColumnDefinition Width="0.5*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBox Text="{Binding Path=SelectedItem.FacePoke4, ElementName=lvCharaList}" Margin="2" Grid.Column="0"/>
+                                            <TextBox Text="{Binding Path=SelectedItem.ResponsePoke4, ElementName=lvCharaList}" AcceptsReturn="True" Margin="2" Height="64" Grid.Column="1"/>
+                                            <Button Name="btClearCharaP4" Content="X" Margin="2" Grid.Column="2" Click="ClearCharacterResponse"/>
+                                        </Grid>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="4*"/>
+                                                <ColumnDefinition Width="0.5*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBox Text="{Binding Path=SelectedItem.FacePoke5, ElementName=lvCharaList}" Margin="2" Grid.Column="0"/>
+                                            <TextBox Text="{Binding Path=SelectedItem.ResponsePoke5, ElementName=lvCharaList}" AcceptsReturn="True" Margin="2" Height="64" Grid.Column="1"/>
+                                            <Button Name="btClearCharaP5" Content="X" Margin="2" Grid.Column="2" Click="ClearCharacterResponse"/>
+                                        </Grid>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="4*"/>
+                                                <ColumnDefinition Width="0.5*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBox Text="{Binding Path=SelectedItem.FacePoke6, ElementName=lvCharaList}" Margin="2" Grid.Column="0"/>
+                                            <TextBox Text="{Binding Path=SelectedItem.ResponsePoke6, ElementName=lvCharaList}" AcceptsReturn="True" Margin="2" Height="64" Grid.Column="1"/>
+                                            <Button Name="btClearCharaP6" Content="X" Margin="2" Grid.Column="2" Click="ClearCharacterResponse"/>
+                                        </Grid>
+
+                                        <Separator Margin="2"/>
+                                        
+                                        <!--Win-->
+                                        <Label Content="[Matching: Win]" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="4*"/>
+                                                <ColumnDefinition Width="0.5*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBox Text="{Binding Path=SelectedItem.FaceWin1, ElementName=lvCharaList}" Margin="2" Grid.Column="0"/>
+                                            <TextBox Text="{Binding Path=SelectedItem.ResponseWin1, ElementName=lvCharaList}" AcceptsReturn="True" Margin="2" Height="64" Grid.Column="1"/>
+                                            <Button Name="btClearCharaW1" Content="X" Margin="2" Grid.Column="2" Click="ClearCharacterResponse"/>
+                                        </Grid>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="4*"/>
+                                                <ColumnDefinition Width="0.5*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBox Text="{Binding Path=SelectedItem.FaceWin2, ElementName=lvCharaList}" Margin="2" Grid.Column="0"/>
+                                            <TextBox Text="{Binding Path=SelectedItem.ResponseWin2, ElementName=lvCharaList}" AcceptsReturn="True" Margin="2" Height="64" Grid.Column="1"/>
+                                            <Button Name="btClearCharaW2" Content="X" Margin="2" Grid.Column="2" Click="ClearCharacterResponse"/>
+                                        </Grid>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="4*"/>
+                                                <ColumnDefinition Width="0.5*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBox Text="{Binding Path=SelectedItem.FaceWin3, ElementName=lvCharaList}" Margin="2" Grid.Column="0"/>
+                                            <TextBox Text="{Binding Path=SelectedItem.ResponseWin3, ElementName=lvCharaList}" AcceptsReturn="True" Margin="2" Height="64" Grid.Column="1"/>
+                                            <Button Name="btClearCharaW3" Content="X" Margin="2" Grid.Column="2" Click="ClearCharacterResponse"/>
+                                        </Grid>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="4*"/>
+                                                <ColumnDefinition Width="0.5*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBox Text="{Binding Path=SelectedItem.FaceWin4, ElementName=lvCharaList}" Margin="2" Grid.Column="0"/>
+                                            <TextBox Text="{Binding Path=SelectedItem.ResponseWin4, ElementName=lvCharaList}" AcceptsReturn="True" Margin="2" Height="64" Grid.Column="1"/>
+                                            <Button Name="btClearCharaW4" Content="X" Margin="2" Grid.Column="2" Click="ClearCharacterResponse"/>
+                                        </Grid>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="4*"/>
+                                                <ColumnDefinition Width="0.5*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBox Text="{Binding Path=SelectedItem.FaceWin5, ElementName=lvCharaList}" Margin="2" Grid.Column="0"/>
+                                            <TextBox Text="{Binding Path=SelectedItem.ResponseWin5, ElementName=lvCharaList}" AcceptsReturn="True" Margin="2" Height="64" Grid.Column="1"/>
+                                            <Button Name="btClearCharaW5" Content="X" Margin="2" Grid.Column="2" Click="ClearCharacterResponse"/>
+                                        </Grid>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="4*"/>
+                                                <ColumnDefinition Width="0.5*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBox Text="{Binding Path=SelectedItem.FaceWin6, ElementName=lvCharaList}" Margin="2" Grid.Column="0"/>
+                                            <TextBox Text="{Binding Path=SelectedItem.ResponseWin6, ElementName=lvCharaList}" AcceptsReturn="True" Margin="2" Height="64" Grid.Column="1"/>
+                                            <Button Name="btClearCharaW6" Content="X" Margin="2" Grid.Column="2" Click="ClearCharacterResponse"/>
+                                        </Grid>
+
+                                        <Separator Margin="2"/>
+                                        
+                                        <!--Match-->
+                                        <Label Content="[Matching: Play]" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="4*"/>
+                                                <ColumnDefinition Width="0.5*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBox Text="{Binding Path=SelectedItem.FaceMatching1, ElementName=lvCharaList}" Margin="2" Grid.Column="0"/>
+                                            <TextBox Text="{Binding Path=SelectedItem.ResponseMatching1, ElementName=lvCharaList}" AcceptsReturn="True" Margin="2" Height="64" Grid.Column="1"/>
+                                            <Button Name="btClearCharaM1" Content="X" Margin="2" Grid.Column="2" Click="ClearCharacterResponse"/>
+                                        </Grid>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="4*"/>
+                                                <ColumnDefinition Width="0.5*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBox Text="{Binding Path=SelectedItem.FaceMatching2, ElementName=lvCharaList}" Margin="2" Grid.Column="0"/>
+                                            <TextBox Text="{Binding Path=SelectedItem.ResponseMatching2, ElementName=lvCharaList}" AcceptsReturn="True" Margin="2" Height="64" Grid.Column="1"/>
+                                            <Button Name="btClearCharaM2" Content="X" Margin="2" Grid.Column="2" Click="ClearCharacterResponse"/>
+                                        </Grid>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="4*"/>
+                                                <ColumnDefinition Width="0.5*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBox Text="{Binding Path=SelectedItem.FaceMatching3, ElementName=lvCharaList}" Margin="2" Grid.Column="0"/>
+                                            <TextBox Text="{Binding Path=SelectedItem.ResponseMatching3, ElementName=lvCharaList}" AcceptsReturn="True" Margin="2" Height="64" Grid.Column="1"/>
+                                            <Button Name="btClearCharaM3" Content="X" Margin="2" Grid.Column="2" Click="ClearCharacterResponse"/>
+                                        </Grid>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="4*"/>
+                                                <ColumnDefinition Width="0.5*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBox Text="{Binding Path=SelectedItem.FaceMatching4, ElementName=lvCharaList}" Margin="2" Grid.Column="0"/>
+                                            <TextBox Text="{Binding Path=SelectedItem.ResponseMatching4, ElementName=lvCharaList}" AcceptsReturn="True" Margin="2" Height="64" Grid.Column="1"/>
+                                            <Button Name="btClearCharaM4" Content="X" Margin="2" Grid.Column="2" Click="ClearCharacterResponse"/>
+                                        </Grid>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="4*"/>
+                                                <ColumnDefinition Width="0.5*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBox Text="{Binding Path=SelectedItem.FaceMatching5, ElementName=lvCharaList}" Margin="2" Grid.Column="0"/>
+                                            <TextBox Text="{Binding Path=SelectedItem.ResponseMatching5, ElementName=lvCharaList}" AcceptsReturn="True" Margin="2" Height="64" Grid.Column="1"/>
+                                            <Button Name="btClearCharaM5" Content="X" Margin="2" Grid.Column="2" Click="ClearCharacterResponse"/>
+                                        </Grid>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="4*"/>
+                                                <ColumnDefinition Width="0.5*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBox Text="{Binding Path=SelectedItem.FaceMatching6, ElementName=lvCharaList}" Margin="2" Grid.Column="0"/>
+                                            <TextBox Text="{Binding Path=SelectedItem.ResponseMatching6, ElementName=lvCharaList}" AcceptsReturn="True" Margin="2" Height="64" Grid.Column="1"/>
+                                            <Button Name="btClearCharaM6" Content="X" Margin="2" Grid.Column="2" Click="ClearCharacterResponse"/>
+                                        </Grid>
+
+                                        <Separator Margin="2"/>
+                                        
+                                        <!--End-->
+                                        <Label Content="[Session End]" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="4*"/>
+                                                <ColumnDefinition Width="0.5*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBox Text="{Binding Path=SelectedItem.ResponseEnd1, ElementName=lvCharaList}" AcceptsReturn="True" Margin="2" Height="64" Grid.Column="1"/>
+                                            <Button Name="btClearCharaE1" Content="X" Margin="2" Grid.Column="2" Click="ClearCharacterResponse"/>
+                                        </Grid>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="4*"/>
+                                                <ColumnDefinition Width="0.5*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBox Text="{Binding Path=SelectedItem.ResponseEnd2, ElementName=lvCharaList}" AcceptsReturn="True" Margin="2" Height="64" Grid.Column="1"/>
+                                            <Button Name="btClearCharaE2" Content="X" Margin="2" Grid.Column="2" Click="ClearCharacterResponse"/>
+                                        </Grid>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="4*"/>
+                                                <ColumnDefinition Width="0.5*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBox Text="{Binding Path=SelectedItem.ResponseEnd3, ElementName=lvCharaList}" AcceptsReturn="True" Margin="2" Height="64" Grid.Column="1"/>
+                                            <Button Name="btClearCharaE3" Content="X" Margin="2" Grid.Column="2" Click="ClearCharacterResponse"/>
+                                        </Grid>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="4*"/>
+                                                <ColumnDefinition Width="0.5*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBox Text="{Binding Path=SelectedItem.ResponseEnd4, ElementName=lvCharaList}" AcceptsReturn="True" Margin="2" Height="64" Grid.Column="1"/>
+                                            <Button Name="btClearCharaE4" Content="X" Margin="2" Grid.Column="2" Click="ClearCharacterResponse"/>
+                                        </Grid>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="4*"/>
+                                                <ColumnDefinition Width="0.5*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBox Text="{Binding Path=SelectedItem.ResponseEnd5, ElementName=lvCharaList}" AcceptsReturn="True" Margin="2" Height="64" Grid.Column="1"/>
+                                            <Button Name="btClearCharaE5" Content="X" Margin="2" Grid.Column="2" Click="ClearCharacterResponse"/>
+                                        </Grid>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="4*"/>
+                                                <ColumnDefinition Width="0.5*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBox Text="{Binding Path=SelectedItem.ResponseEnd6, ElementName=lvCharaList}" AcceptsReturn="True" Margin="2" Height="64" Grid.Column="1"/>
+                                            <Button Name="btClearCharaE6" Content="X" Margin="2" Grid.Column="2" Click="ClearCharacterResponse"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </ScrollViewer>
+
+                            </StackPanel>
+                        </TabItem>
+                        <TabItem Header="Other Properties">
+                            <StackPanel>
+                                <!--Unlock Method-->
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="2*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label Content="&#8317;&#8305;&#8318; Unlock Method: " HorizontalAlignment="Right" Grid.Column="0" ToolTip="Defines how character is acquired. Refer to BST2 BemaniWiki page for more info.&#xA;&#xA;def - Unlocked by default.&#xA;sato - Sato-san unlock method.&#xA;suzuki - Suzuki-san unlock method.&#xA;volte_201604 - FLOOR INFECTION rewards. Used in conjunction with Unlock Stage.&#xA;coco_natsu - CocoNatsu/Shinonome sisters unlock method.&#xA;popn - pop'n music rewards. Used in conjunction with Unlock Stage.&#xA;illil - Illil unlock method.&#xA;summer_fes - BisCo (Summer ver.) unlock method."/>
+                                    <ComboBox x:Name="cbCharUnlock" Text="{Binding Path=SelectedItem.UnlockMethod, ElementName=lvCharaList}" Margin="2" Grid.Column="1" IsEditable="True">
+                                        <ComboBoxItem Content="def"/>
+                                        <ComboBoxItem Content="sato"/>
+                                        <ComboBoxItem Content="suzuki"/>
+                                        <ComboBoxItem Content="volte_201604"/>
+                                        <ComboBoxItem Content="coco_natsu"/>
+                                        <ComboBoxItem Content="popn"/>
+                                        <ComboBoxItem Content="illil"/>
+                                        <ComboBoxItem Content="summer_fes"/>
+                                    </ComboBox>
+                                </Grid>
+                                <!--Unlock Stage-->
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="2*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label Content="&#8317;&#8305;&#8318; Unlock Stage: " HorizontalAlignment="Right" Grid.Column="0" ToolTip="Used in conjunction with some unlock methods.&#xA;&#xA;- FLOOR INFECTION rewards:&#xA;0 - Rasis III unlocked.&#xA;1 - Tsumabuki Right unlocked.&#xA;2 - Tsumabuki Left unlocked.&#xA;&#xA;- pop'n music rewards:&#xA;0 - Mimi unlocked.&#xA;1 - Nyami unlocked.&#xA;2 - Iroha unlocked.&#xA;&#xA;For unrelated unlock methods, use -1."/>
+                                    <xctk:IntegerUpDown Value="{Binding Path=SelectedItem.UnlockStage, ElementName=lvCharaList}" Minimum="-1" Margin="2" Grid.Column="1"/>
+                                </Grid>
+                                <!--Unknown2-->
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="3*"/>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width="2*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label Content="&#8317;&#8305;&#8318; Character Color: " HorizontalAlignment="Right" Grid.Column="0" ToolTip="An RGB formatted color.&#xA;Seems to be only used for character's poke response window in course selection menu"/>
+                                    <xctk:IntegerUpDown Value="{Binding Path=SelectedItem.ColorR, ElementName=lvCharaList}" Minimum="0" Maximum="255" Margin="2" Grid.Column="1"/>
+                                    <xctk:IntegerUpDown Value="{Binding Path=SelectedItem.ColorG, ElementName=lvCharaList}" Minimum="0" Maximum="255" Margin="2" Grid.Column="2"/>
+                                    <xctk:IntegerUpDown Value="{Binding Path=SelectedItem.ColorB, ElementName=lvCharaList}" Minimum="0" Maximum="255" Margin="2" Grid.Column="3"/>
+                                </Grid>
+                            </StackPanel>
+                        </TabItem>
+                    </TabControl>
+                </Grid>
             </TabItem>
             <TabItem Header="HIGH TENSION Sheet">
                 <Grid>

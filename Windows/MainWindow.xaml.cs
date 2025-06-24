@@ -25,11 +25,13 @@ namespace BST_SheetsEditor
 		MusicList musicList = new MusicList();
 		HackerList hackerList = new HackerList();
 		CourseList courseList = new CourseList();
+		CharaList charaList = new CharaList();
 		HTSheet htSheet = new HTSheet();
 
 		bool isMusicListLoaded = false;
 		bool isHackerListLoaded = false;
 		bool isCourseListLoaded = false;
+		bool isCharaListLoaded = false;
 		bool isHTSheetLoaded = false;
 
 		string packagePath = string.Empty;
@@ -93,6 +95,12 @@ namespace BST_SheetsEditor
 						isCourseListLoaded = true;
                         HackerList_Refresh(sender, e);
                         break;
+					case 4:
+						charaList = CharaList.ParseCSV(fileFull);
+						lvCharaList.ItemsSource = charaList.Characters;
+
+						isCharaListLoaded = true;
+						break;
 					case 5:
                         if (musicList.Songs.Count == 0 && MessageBox.Show("Your Music List is currently empty.\nAre you sure you want to continue?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
                             break;
@@ -207,9 +215,12 @@ namespace BST_SheetsEditor
                     // CharaList
                     if (File.Exists(dialog.FileName + Util.SheetPaths["BST2_CharaList"]))
                     {
-                        file = File.ReadAllLines(dialog.FileName + Util.SheetPaths["BST2_CharaList"], Encoding.GetEncoding("Shift-JIS"));
+                        string _file = File.ReadAllText(dialog.FileName + Util.SheetPaths["BST2_CharaList"], Encoding.GetEncoding("Shift-JIS"));
 
-						// TODO: Parse list
+                        charaList = CharaList.ParseCSV(_file);
+                        lvCharaList.ItemsSource = charaList.Characters;
+
+                        isCharaListLoaded = true;
                     }
                     // HTSheet
                     if (File.Exists(dialog.FileName + Util.SheetPaths["BST2_HTSheet"]))
@@ -234,10 +245,9 @@ namespace BST_SheetsEditor
 					$"- Song List (musiclist.csv): \t\t{(isMusicListLoaded ? "LOADED" : "NOT FOUND")}\n"+
 					$"- BEAST HACKER List (hacker_list.csv): \t{(isHackerListLoaded ? "LOADED" : "NOT FOUND")}\n"+
 					$"- Course Mode List (courselist.csv): \t{(isCourseListLoaded ? "LOADED" : "NOT FOUND")}\n"+
-					//$"- BEAST CRISIS List (crysislist.csv): \t{(isMusicListLoaded ? "LOADED" : "NOT FOUND")}\n"+
-					//$"- Character List (chara_list.csv): \t\t{(isMusicListLoaded ? "LOADED" : "NOT FOUND")}\n"+
-					$"- BEAST CRISIS List (crysislist.csv): \tNOT SUPPORTED\n"+
-					$"- Character List (chara_list.csv): \t\tNOT SUPPORTED\n"+
+                    //$"- BEAST CRISIS List (crysislist.csv): \t{(isMusicListLoaded ? "LOADED" : "NOT FOUND")}\n"+
+                    $"- BEAST CRISIS List (crysislist.csv): \tNOT SUPPORTED\n" +
+                    $"- Character List (chara_list.csv): \t\t{(isCharaListLoaded ? "LOADED" : "NOT FOUND")}\n"+
 					$"- HIGH TENSION Sheet (ht_sheat.txt): \t{(isHTSheetLoaded ? "LOADED" : "NOT FOUND")}\n",
 					"Complete", MessageBoxButton.OK, MessageBoxImage.Information);
             }
@@ -270,6 +280,10 @@ namespace BST_SheetsEditor
                         case 2:
                             File.WriteAllText(dialog.FileName, CourseList.CreateCSV(courseList), Encoding.GetEncoding("Shift-JIS"));
                             break;
+                        // Chara List
+                        case 4:
+                            File.WriteAllText(dialog.FileName, CharaList.CreateCSV(charaList), Encoding.GetEncoding("UTF-16"));
+                            break;
                         // HIGH TENSION Sheet
                         case 5:
                             File.WriteAllLines(dialog.FileName, HTSheet.CreateTXT(htSheet), Encoding.GetEncoding("Shift-JIS"));
@@ -287,7 +301,7 @@ namespace BST_SheetsEditor
 
         private void miSaveAll_Click(object sender, RoutedEventArgs e)
 		{
-			new SavePack(packagePath, musicList, hackerList, courseList, htSheet).ShowDialog();
+			new SavePack(packagePath, musicList, hackerList, courseList, charaList, htSheet).ShowDialog();
 		}
 
         private void bQuotationBracketCopy_Click(object sender, RoutedEventArgs e)
@@ -488,6 +502,94 @@ namespace BST_SheetsEditor
 			{
 				courseList.Entries.Clear();
 				CourseList_Refresh(sender, e);
+			}
+		}
+
+		private void CharaList_Refresh(object sender, RoutedEventArgs e)
+		{
+			lvCharaList.ItemsSource = null;
+			lvCharaList.ItemsSource = charaList.Characters;
+		}
+
+		private void bRemoveEntry_CharaList_Click(object sender, RoutedEventArgs e)
+		{
+			if(lvCharaList.SelectedIndex > -1)
+			{
+				charaList.Characters.RemoveAt(lvCharaList.SelectedIndex);
+                CharaList_Refresh(sender, e);
+			}
+		}
+
+		private void bAddEntry_CharaList_Click(object sender, RoutedEventArgs e)
+		{
+			CharaList.Character newCharacter = new CharaList.Character()
+			{
+                Name = "Unnamed",
+				UnlockMethod = "def",
+				UnlockStage = -1,
+				Description = "Make sure to add line\nbreaks yourself.\nThe game does not\nwrap the text!",
+				ButtonTexture = "btn_non",
+				ResponsePoke1 = "For any unused entries,\nleave a dash or click\nthe X button.",
+				ResponsePoke2 = "-",
+				ResponsePoke3 = "-",
+				ResponsePoke4 = "-",
+				ResponsePoke5 = "-",
+				ResponsePoke6 = "-",
+				FacePoke1 = "-",
+				FacePoke2 = "-",
+				FacePoke3 = "-",
+				FacePoke4 = "-",
+				FacePoke5 = "-",
+				FacePoke6 = "-",
+				ResponseWin1 = "-",
+				ResponseWin2 = "-",
+				ResponseWin3 = "-",
+				ResponseWin4 = "-",
+				ResponseWin5 = "-",
+				ResponseWin6 = "-",
+				FaceWin1 = "-",
+				FaceWin2 = "-",
+				FaceWin3 = "-",
+				FaceWin4 = "-",
+				FaceWin5 = "-",
+				FaceWin6 = "-",
+				ResponseMatching1 = "-",
+				ResponseMatching2 = "-",
+				ResponseMatching3 = "-",
+				ResponseMatching4 = "-",
+				ResponseMatching5 = "-",
+				ResponseMatching6 = "-",
+				FaceMatching1 = "-",
+				FaceMatching2 = "-",
+				FaceMatching3 = "-",
+				FaceMatching4 = "-",
+				FaceMatching5 = "-",
+				FaceMatching6 = "-",
+				ResponseEnd1 = "-",
+				ResponseEnd2 = "-",
+				ResponseEnd3 = "-",
+				ResponseEnd4 = "-",
+				ResponseEnd5 = "-",
+				ResponseEnd6 = "-",
+                ColorR = 255,
+                ColorG = 255,
+                ColorB = 255,
+            };
+
+			if (lvCharaList.SelectedIndex > -1)
+				charaList.Characters.Insert(lvCharaList.SelectedIndex + 1, newCharacter);
+			else
+                charaList.Characters.Add(newCharacter);
+
+            CharaList_Refresh(sender, e);
+		}
+
+		private void bClear_CharaList_Click(object sender, RoutedEventArgs e)
+		{
+			if (MessageBox.Show("Are you sure you want to delete all entries from the Character List?\nThis action is irreversible!", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+			{
+				charaList.Characters.Clear();
+				CharaList_Refresh(sender, e);
 			}
 		}
 
@@ -692,6 +794,31 @@ namespace BST_SheetsEditor
 			else
 			{
 				MessageBox.Show("Clipboard does not contain MusicList entry data.", "Error parsing data.", MessageBoxButton.OK, MessageBoxImage.Warning);
+			}
+        }
+
+        private void bAppendFromClipboard_CharaList_Click(object sender, RoutedEventArgs e)
+        {
+			if(Clipboard.ContainsText())
+			{
+				try
+				{
+                    CharaList.Character newEntry = CharaList.Character.ParseData(Clipboard.GetText().Split('\uFF5C'));
+
+                    charaList.Characters.Add(newEntry);
+
+                    CharaList_Refresh(sender, e);
+
+					lvCharaList.SelectedIndex = charaList.Characters.Count - 1;
+                }
+				catch
+				{
+                    MessageBox.Show("Clipboard does not contain CharaList entry data.", "Error parsing data.", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+			else
+			{
+				MessageBox.Show("Clipboard does not contain CharaList entry data.", "Error parsing data.", MessageBoxButton.OK, MessageBoxImage.Warning);
 			}
         }
 
@@ -930,5 +1057,111 @@ namespace BST_SheetsEditor
                     break;
 			}
         }
+
+		private void ClearCharacterResponse(object sender, RoutedEventArgs e)
+		{
+			CharaList.Character selectedCharacter = (CharaList.Character)lvCharaList.SelectedItem;
+			int selID = lvCharaList.SelectedIndex;
+			switch (((Button)sender).Name)
+			{
+				// Poking
+				case "btClearCharaP1":
+					selectedCharacter.ResponsePoke1 = "-";
+					selectedCharacter.FacePoke1 = "-";
+					break;
+				case "btClearCharaP2":
+					selectedCharacter.ResponsePoke2 = "-";
+					selectedCharacter.FacePoke2 = "-";
+					break;
+				case "btClearCharaP3":
+					selectedCharacter.ResponsePoke3 = "-";
+					selectedCharacter.FacePoke3 = "-";
+					break;
+				case "btClearCharaP4":
+					selectedCharacter.ResponsePoke4 = "-";
+					selectedCharacter.FacePoke4 = "-";
+					break;
+				case "btClearCharaP5":
+					selectedCharacter.ResponsePoke5 = "-";
+					selectedCharacter.FacePoke5 = "-";
+					break;
+				case "btClearCharaP6":
+					selectedCharacter.ResponsePoke6 = "-";
+					selectedCharacter.FacePoke6 = "-";
+					break;
+				// Winning
+				case "btClearCharaW1":
+					selectedCharacter.ResponseWin1 = "-";
+					selectedCharacter.FaceWin1 = "-";
+					break;
+				case "btClearCharaW2":
+                    selectedCharacter.ResponseWin2 = "-";
+                    selectedCharacter.FaceWin2 = "-";
+                    break;
+				case "btClearCharaW3":
+                    selectedCharacter.ResponseWin3 = "-";
+                    selectedCharacter.FaceWin3 = "-";
+                    break;
+				case "btClearCharaW4":
+                    selectedCharacter.ResponseWin4 = "-";
+                    selectedCharacter.FaceWin4 = "-";
+                    break;
+				case "btClearCharaW5":
+                    selectedCharacter.ResponseWin5 = "-";
+                    selectedCharacter.FaceWin5 = "-";
+                    break;
+				case "btClearCharaW6":
+                    selectedCharacter.ResponseWin6 = "-";
+                    selectedCharacter.FaceWin6 = "-";
+                    break;
+				// Matching
+				case "btClearCharaM1":
+					selectedCharacter.ResponseMatching1 = "-";
+					selectedCharacter.FaceMatching1 = "-";
+					break;
+				case "btClearCharaM2":
+                    selectedCharacter.ResponseMatching2 = "-";
+                    selectedCharacter.FaceMatching2 = "-";
+                    break;
+				case "btClearCharaM3":
+                    selectedCharacter.ResponseMatching3 = "-";
+                    selectedCharacter.FaceMatching3 = "-";
+                    break;
+				case "btClearCharaM4":
+                    selectedCharacter.ResponseMatching4 = "-";
+                    selectedCharacter.FaceMatching4 = "-";
+                    break;
+				case "btClearCharaM5":
+                    selectedCharacter.ResponseMatching5 = "-";
+                    selectedCharacter.FaceMatching5 = "-";
+                    break;
+				case "btClearCharaM6":
+                    selectedCharacter.ResponseMatching6 = "-";
+                    selectedCharacter.FaceMatching6 = "-";
+                    break;
+				// Ending
+				case "btClearCharaE1":
+					selectedCharacter.ResponseEnd1 = "-";
+					break;
+				case "btClearCharaE2":
+                    selectedCharacter.ResponseEnd2 = "-";
+                    break;
+				case "btClearCharaE3":
+                    selectedCharacter.ResponseEnd3 = "-";
+                    break;
+				case "btClearCharaE4":
+                    selectedCharacter.ResponseEnd4 = "-";
+                    break;
+				case "btClearCharaE5":
+                    selectedCharacter.ResponseEnd5 = "-";
+                    break;
+				case "btClearCharaE6":
+                    selectedCharacter.ResponseEnd6 = "-";
+                    break;
+			}
+
+			lvCharaList.SelectedIndex = -1;
+			lvCharaList.SelectedIndex = selID;
+		}
     }
 }

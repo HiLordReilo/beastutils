@@ -23,11 +23,12 @@ namespace BST_SheetsEditor
         MusicList _musicList;
         HackerList _hackerList;
         CourseList _courseList;
+        CharaList _charaList;
         HTSheet _htSheet;
 
         enum SaveState { SKIP, SUCCESS, FAIL }
 
-        public SavePack(string initialPath, MusicList musicList, HackerList hackerList, CourseList courseList, HTSheet htSheet)
+        public SavePack(string initialPath, MusicList musicList, HackerList hackerList, CourseList courseList, CharaList charaList, HTSheet htSheet)
         {
             InitializeComponent();
 
@@ -35,10 +36,12 @@ namespace BST_SheetsEditor
             _musicList = musicList;
             _hackerList = hackerList;
             _courseList = courseList;
+            _charaList = charaList;
             _htSheet = htSheet;
             cbMusicList.IsChecked = musicList.Songs.Count > 0;
             cbHackerList.IsChecked = hackerList.Entries.Count > 0;
             cbCourseList.IsChecked = courseList.Entries.Count > 0;
+            cbCharaList.IsChecked = charaList.Characters.Count > 0;
             cbHTSheet.IsChecked = htSheet.Entries.Count > 0;
         }
 
@@ -122,6 +125,18 @@ namespace BST_SheetsEditor
                 catch
                 {
                     ssCoL = SaveState.FAIL;
+                    anyFail = true;
+                }
+            // CharaList
+            if (cbCharaList.IsChecked == true)
+                try
+                {
+                    File.WriteAllText(tbSavePath.Text + Util.SheetPaths["BST2_CharaList"], CharaList.CreateCSV(_charaList), Encoding.GetEncoding("UTF-16"));
+                    ssChL = SaveState.SUCCESS;
+                }
+                catch
+                {
+                    ssChL = SaveState.FAIL;
                     anyFail = true;
                 }
             // HIGH-TENSION Sheet
