@@ -1,3 +1,8 @@
+> [!IMPORTANT]
+> # ⚠️ This repository is archived.
+> I realized how bad of a decision it was to effectively house multiple repositories in one, separating them into branches. That is not how repos are supposed to be built and it creates a huge headache.
+> I will separate them into their own repositories later, but for the time being, if you need any of these tools, you can get them off here or just contact me on Discord _(HiLord#1004)_ or something.
+
 # beastutils
 A collection of various utilities for BeatStream modding.
 
